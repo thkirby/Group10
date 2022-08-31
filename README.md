@@ -2,8 +2,8 @@
 
 Team Members:
 
-Thomas Kirby(thkirby) - Leader
-
+Thomas Kirby (thkirby) - Leader
+Brandon Johnson (bjproxy)
 Hannah Heflin (hannahheflin)
 
 
@@ -27,4 +27,4 @@ SQLite3
 
 Description:
 
-A Facebook like social media platform
+A Facebook-like social media platform
