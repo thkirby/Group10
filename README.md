@@ -2,9 +2,9 @@
 
 Team Members:
 
-Thomas Kirby (thkirby) - Leader
+Thomas Kirby - tmk169 (thkirby) - Leader
 
-Brandon Johnson (bjproxy)
+Brandon Johnson -  (bjproxy)
 
 Hannah Heflin - hgh137 (hannahheflin)
 
