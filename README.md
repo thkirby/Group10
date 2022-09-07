@@ -31,4 +31,4 @@ SQLite3
 
 Description:
 
-A Facebook-like social media platform
+A Facebook-like social media platform. The objective of this website is to connect friends and update them using timelines. Their will be login, timeline, friend, commenting, liking, and sharing features.
