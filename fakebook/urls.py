@@ -23,10 +23,9 @@ from django.conf import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('register/', user_views.register, name='register'),
-    path('', auth_views.LoginView.as_view(template_name='feed/landing.html', redirect_authenticated_user=True), name='home'),
-    path('login/', auth_views.LoginView.as_view(template_name='users/login.html', redirect_authenticated_user=True), name='login'),
+    path('', auth_views.LoginView.as_view(template_name='feed/index.html', redirect_authenticated_user=True), name='home'),
+    path('login/', auth_views.LoginView.as_view(template_name='users/login.html'), name='login'),
     path('profile/', user_views.profile, name='profile'),
-    path('edit_profile/', user_views.edit_profile, name='edit_profile'),
     path('users/<slug>/', user_views.profile_view, name='profile_view'),
     path('logout/', auth_views.LogoutView.as_view(template_name='users/logout.html'), name='logout'),
     path('', include('feed.urls')),

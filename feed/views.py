@@ -4,4 +4,4 @@ from django.views import View
 
 class Index(View):
     def get(self, request, *args, **kwargs):
-        return render(request, 'feed/landing.html')
+        return render(request, 'feed/index.html')
