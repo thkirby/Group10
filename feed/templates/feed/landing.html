@@ -1,6 +1,4 @@
-<!doctype html>
-<html lang="en">
-{% extends 'feed/layout.html' %} {% load static %} {% load crispy_forms_tags %}
+{% extends 'feed/base.html' %} {% load crispy_forms_tags %}
 {% block content %}
 <div class="container">
     <div class="row justify-content-center mt-5">
@@ -12,7 +10,7 @@
                 {% endfor %}
             {% endif %}
             <div class="card card-signin my-3">
-                <div class="card-body" style="background: whitesmoke">
+                <div class="card-body">
                     <div class="d-grid justify-content-center">
                         <form class="form-signin" method="POST">
                             {% csrf_token %}
@@ -20,7 +18,7 @@
                                 {{ form|crispy }}
                             </fieldset>
                                 <div class="d-grid gap-3">
-                                    <button type="submit" class="btn btn-success btn-lg">Login</button>
+                                    <button type="submit" class="btn btn-success btn-lg">Log in</button>
                                     <a href="{% url 'register' %}" class="btn btn-primary btn-lg">Create new account</a>
                                 </div>
                         </form>
@@ -31,4 +29,3 @@
     </div>
 </div>
 {% endblock content %}
-</html>

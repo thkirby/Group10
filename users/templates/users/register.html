@@ -1,4 +1,4 @@
-{% extends "feed/layout.html" %} {% load crispy_forms_tags %} {% load static %}
+{% extends "feed/base.html" %} {% load crispy_forms_tags %}
 {% block content %}
 <br />
 <div class="container">
@@ -25,7 +25,7 @@
             <small>
                 <p class="text-center">
                     Already Registered?
-                    <a href="{% url 'home' %}"><b>Login</b></a>
+                    <a href="{% url 'home' %}"><b>Log in</b></a>
                 </p>
             </small>
           </form>
