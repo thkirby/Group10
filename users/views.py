@@ -4,8 +4,107 @@ from .models import Profile, FriendRequest
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from .forms import UserRegistrationForm, UserUpdateForm, ProfileUpdateForm
+from django.conf import settings
+from django.http import HttpResponseRedirect
+import random
 
 User = get_user_model()
+
+@login_required
+def users_list(request):
+    users = Profile.objects.exclude(user=request.user)
+    sent_friend_requests = FriendRequest.objects.filter(from_user=request.user)
+    sent_to = []
+    friends = []
+    for user in users:
+            friend = user.friends.all()
+            for f in friend:
+                    if f in friends:
+                            friend = friend.exclude(user=f.user)
+            friends+=friend
+    my_friends = request.user.profile.friends.all()
+    for i in my_friends:
+            if i in friends:
+                    friends.remove(i)
+    if request.user.profile in friends:
+            friends.remove(request.user.profile)
+    random_list = random.sample(list(users), min(len(list(users)), 10))
+    for r in random_list:
+            if r in friends:
+                    random_list.remove(r)
+    friends+=random_list
+    for i in my_friends:
+            if i in friends:
+                    friends.remove(i)
+    for se in sent_friend_requests:
+            sent_to.append(se.to_user)
+    context = {
+            'users': friends,
+            'sent': sent_to
+    }
+    return render(request, "users/users_list.html", context)
+
+def friend_list(request):
+    p = request.user.profile
+    friends = p.friends.all()
+    context={
+    'friends': friends
+    }
+    return render(request, "users/friend_list.html", context)
+
+@login_required
+def send_friend_request(request, id):
+    user = get_object_or_404(User, id=id)
+    frequest, created = FriendRequest.objects.get_or_create(
+                    from_user=request.user,
+                    to_user=user)
+    return HttpResponseRedirect('/users/{}'.format(user.profile.slug))
+
+@login_required
+def cancel_friend_request(request, id):
+    user = get_object_or_404(User, id=id)
+    frequest = FriendRequest.objects.filter(
+                    from_user=request.user,
+                    to_user=user).first()
+    frequest.delete()
+    return HttpResponseRedirect('/users/{}'.format(user.profile.slug))
+
+@login_required
+def accept_friend_request(request, id):
+    from_user = get_object_or_404(User, id=id)
+    frequest = FriendRequest.objects.filter(from_user=from_user, to_user=request.user).first()
+    user1 = frequest.to_user
+    user2 = from_user
+    user1.profile.friends.add(user2.profile)
+    user2.profile.friends.add(user1.profile)
+    if(FriendRequest.objects.filter(from_user=request.user, to_user=from_user).first()):
+            request_rev = FriendRequest.objects.filter(from_user=request.user, to_user=from_user).first()
+            request_rev.delete()
+    frequest.delete()
+    return HttpResponseRedirect('/users/{}'.format(request.user.profile.slug))
+
+@login_required
+def delete_friend_request(request, id):
+    from_user = get_object_or_404(User, id=id)
+    frequest = FriendRequest.objects.filter(from_user=from_user, to_user=request.user).first()
+    frequest.delete()
+    return HttpResponseRedirect('/users/{}'.format(request.user.profile.slug))
+
+def delete_friend(request, id):
+    user_profile = request.user.profile
+    friend_profile = get_object_or_404(Profile, id=id)
+    user_profile.friends.remove(friend_profile)
+    friend_profile.friends.remove(user_profile)
+    return HttpResponseRedirect('/users/{}'.format(friend_profile.slug))
+
+@login_required
+def search_users(request):
+    query = request.GET.get('q')
+    object_list = User.objects.filter(username__icontains=query)
+    context ={
+            'users': object_list
+    }
+    return render(request, "users/search_users.html", context)
 
 
 # registration using forms created in forms.py
