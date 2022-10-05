@@ -13,8 +13,9 @@ class Profile(models.Model):
     birthdate = models.DateField(null=True, blank=True)
     location = models.CharField(max_length=120, blank=True)
     slug = AutoSlugField(populate_from='user')
-    user_bio = models.CharField(max_length=255, blank=True)
+    bio = models.CharField(max_length=255, blank=True)
     friends = models.ManyToManyField("Profile", blank=True)
+    User._meta.get_field('email')._unique = True
 
     def __str__(self):
         return str(self.user.username)

@@ -10,6 +10,7 @@ import random
 
 User = get_user_model()
 
+
 @login_required
 def users_list(request):
     users = Profile.objects.exclude(user=request.user)
@@ -17,57 +18,61 @@ def users_list(request):
     sent_to = []
     friends = []
     for user in users:
-            friend = user.friends.all()
-            for f in friend:
-                    if f in friends:
-                            friend = friend.exclude(user=f.user)
-            friends+=friend
+        friend = user.friends.all()
+        for f in friend:
+            if f in friends:
+                friend = friend.exclude(user=f.user)
+        friends += friend
     my_friends = request.user.profile.friends.all()
     for i in my_friends:
-            if i in friends:
-                    friends.remove(i)
+        if i in friends:
+            friends.remove(i)
     if request.user.profile in friends:
-            friends.remove(request.user.profile)
+        friends.remove(request.user.profile)
     random_list = random.sample(list(users), min(len(list(users)), 10))
     for r in random_list:
-            if r in friends:
-                    random_list.remove(r)
-    friends+=random_list
+        if r in friends:
+            random_list.remove(r)
+    friends += random_list
     for i in my_friends:
-            if i in friends:
-                    friends.remove(i)
+        if i in friends:
+            friends.remove(i)
     for se in sent_friend_requests:
-            sent_to.append(se.to_user)
+        sent_to.append(se.to_user)
     context = {
-            'users': friends,
-            'sent': sent_to
+        'users': friends,
+        'sent': sent_to
     }
     return render(request, "users/users_list.html", context)
+
 
 def friend_list(request):
     p = request.user.profile
     friends = p.friends.all()
-    context={
-    'friends': friends
+    context = {
+        'friends': friends
     }
     return render(request, "users/friend_list.html", context)
+
 
 @login_required
 def send_friend_request(request, id):
     user = get_object_or_404(User, id=id)
     frequest, created = FriendRequest.objects.get_or_create(
-                    from_user=request.user,
-                    to_user=user)
+        from_user=request.user,
+        to_user=user)
     return HttpResponseRedirect('/users/{}'.format(user.profile.slug))
+
 
 @login_required
 def cancel_friend_request(request, id):
     user = get_object_or_404(User, id=id)
     frequest = FriendRequest.objects.filter(
-                    from_user=request.user,
-                    to_user=user).first()
+        from_user=request.user,
+        to_user=user).first()
     frequest.delete()
     return HttpResponseRedirect('/users/{}'.format(user.profile.slug))
+
 
 @login_required
 def accept_friend_request(request, id):
@@ -77,11 +82,12 @@ def accept_friend_request(request, id):
     user2 = from_user
     user1.profile.friends.add(user2.profile)
     user2.profile.friends.add(user1.profile)
-    if(FriendRequest.objects.filter(from_user=request.user, to_user=from_user).first()):
-            request_rev = FriendRequest.objects.filter(from_user=request.user, to_user=from_user).first()
-            request_rev.delete()
+    if (FriendRequest.objects.filter(from_user=request.user, to_user=from_user).first()):
+        request_rev = FriendRequest.objects.filter(from_user=request.user, to_user=from_user).first()
+        request_rev.delete()
     frequest.delete()
     return HttpResponseRedirect('/users/{}'.format(request.user.profile.slug))
+
 
 @login_required
 def delete_friend_request(request, id):
@@ -90,6 +96,7 @@ def delete_friend_request(request, id):
     frequest.delete()
     return HttpResponseRedirect('/users/{}'.format(request.user.profile.slug))
 
+
 def delete_friend(request, id):
     user_profile = request.user.profile
     friend_profile = get_object_or_404(Profile, id=id)
@@ -97,12 +104,13 @@ def delete_friend(request, id):
     friend_profile.friends.remove(user_profile)
     return HttpResponseRedirect('/users/{}'.format(friend_profile.slug))
 
+
 @login_required
 def search_users(request):
     query = request.GET.get('q')
     object_list = User.objects.filter(username__icontains=query)
-    context ={
-            'users': object_list
+    context = {
+        'users': object_list
     }
     return render(request, "users/search_users.html", context)
 
@@ -114,7 +122,7 @@ def register(request):
         if form.is_valid():
             form.save()
             username = form.cleaned_data.get('username')
-            messages.success(request, f'Your account has been created! You can now login')
+            messages.success(request, f'Your account has been created! You can now log in')
             return redirect('home')
     else:
         form = UserRegistrationForm()

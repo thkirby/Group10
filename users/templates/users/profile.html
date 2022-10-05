@@ -53,10 +53,10 @@
                 {% if u.profile.location %}
                     <p class="list-group-item"> Location: {{ u.profile.location }} </p>
                 {% endif %}
-                {% if u.profile.user_bio %}
+                {% if u.profile.bio %}
                     <div class="card">
                         <label class="text fw-bold mx-3">Bio</label>
-                        <p class="card-body">{{ u.profile.user_bio }}</p>
+                        <p class="card-body">{{ u.profile.bio }}</p>
                     </div>
                 {% endif %}
             </div>
