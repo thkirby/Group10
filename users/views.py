@@ -4,7 +4,7 @@ from .models import Profile, FriendRequest
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from .forms import UserRegistrationForm, UserUpdateForm, ProfileUpdateForm
-from django.conf import settings
+from django.http import JsonResponse
 from django.http import HttpResponseRedirect
 import random
 
@@ -39,6 +39,7 @@ def users_list(request):
             friends.remove(i)
     for se in sent_friend_requests:
         sent_to.append(se.to_user)
+    friends = list(set(friends))
     context = {
         'users': friends,
         'sent': sent_to
@@ -61,7 +62,7 @@ def send_friend_request(request, id):
     frequest, created = FriendRequest.objects.get_or_create(
         from_user=request.user,
         to_user=user)
-    return HttpResponseRedirect('/users/{}'.format(user.profile.slug))
+    return redirect(request.META['HTTP_REFERER'])
 
 
 @login_required
@@ -71,7 +72,7 @@ def cancel_friend_request(request, id):
         from_user=request.user,
         to_user=user).first()
     frequest.delete()
-    return HttpResponseRedirect('/users/{}'.format(user.profile.slug))
+    return redirect(request.META['HTTP_REFERER'])
 
 
 @login_required
@@ -86,7 +87,7 @@ def accept_friend_request(request, id):
         request_rev = FriendRequest.objects.filter(from_user=request.user, to_user=from_user).first()
         request_rev.delete()
     frequest.delete()
-    return HttpResponseRedirect('/users/{}'.format(request.user.profile.slug))
+    return redirect(request.META['HTTP_REFERER'])
 
 
 @login_required
@@ -94,7 +95,7 @@ def delete_friend_request(request, id):
     from_user = get_object_or_404(User, id=id)
     frequest = FriendRequest.objects.filter(from_user=from_user, to_user=request.user).first()
     frequest.delete()
-    return HttpResponseRedirect('/users/{}'.format(request.user.profile.slug))
+    return redirect(request.META['HTTP_REFERER'])
 
 
 def delete_friend(request, id):
@@ -102,7 +103,7 @@ def delete_friend(request, id):
     friend_profile = get_object_or_404(Profile, id=id)
     user_profile.friends.remove(friend_profile)
     friend_profile.friends.remove(user_profile)
-    return HttpResponseRedirect('/users/{}'.format(friend_profile.slug))
+    return redirect(request.META['HTTP_REFERER'])
 
 
 @login_required
@@ -208,13 +209,18 @@ def profile_view(request, slug):
             if len(FriendRequest.objects.filter(
                     from_user=user_profile.user).filter(to_user=request.user)) == 1:
                 button_status = 'friend_request_received'
+        context = {
+            'u': user,
+            'button_status': button_status,
+            'friends_list': friends,
+            'sent_friend_requests': sent_friend_requests,
+            'rec_friend_requests': rec_friend_requests,
+        }
+        return render(request, "users/profile.html", context)
 
     context = {
         'u': user,
-        'button_status': button_status,
         'friends_list': friends,
-        'sent_friend_requests': sent_friend_requests,
-        'rec_friend_requests': rec_friend_requests,
     }
 
-    return render(request, "users/profile.html", context)
+    return render(request, "users/profile_view.html", context)

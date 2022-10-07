@@ -1,5 +1,5 @@
 {% block content %}
-    <nav class="navbar navbar-expand-xxl" style="background: royalblue">
+    <nav class="sticky-top navbar navbar-expand-xxl" style="background: royalblue">
         <h1 class="navbar-brand px-2 mb-auto fw-bolder text-white">Fakebook</h1>
         <div class="container">
             <div class="collapse navbar-collapse ms-4" id="navbarSupportedContent">
@@ -12,7 +12,7 @@
                       {% endif %}
                   </li>
                   <li class="nav-item">
-                    <a class="navbar-brand text-white" href="#">Link</a>
+                    <a class="navbar-brand text-white" href={% url 'users_list' %}>People</a>
                   </li>
                   <li class="nav-item dropdown">
                       <a class="navbar-brand dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -29,8 +29,8 @@
                     <a class="navbar-brand disabled" style="color: grey" aria-disabled="true">Disabled</a>
                   </li>
               </ul>
-              <form class="d-flex" role="search">
-                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+              <form class="d-flex" role="search" action="{% url 'search_users' %}" method="get">
+                <input class="form-control me-2" name="q" type="search" placeholder="Search" aria-label="Search" >
                 <button class="btn btn-success" type="submit">Search</button>
               </form>
             </div>
