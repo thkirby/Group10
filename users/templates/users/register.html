@@ -1,0 +1,37 @@
+{% extends "feed/base.html" %} {% load crispy_forms_tags %}
+{% block content %}
+<br />
+<div class="container">
+  <div class="row">
+    <div class="col-sm-9 col-md-9 col-lg-7 mx-auto">
+      <div class="card card-signin my-5">
+        <div class="card-body">
+          <h5 class="card-title text-center text-primary fw-bolder" style=""><b>Create A New Account</b></h5>
+          <form class="form-signup" method="POST">
+            {% csrf_token %}
+            <fieldset class="form-signup">
+              <br />
+              {{ form|crispy }}
+            </fieldset>
+            <div class="form-signup">
+                <div class="d-flex justify-content-center mt-5">
+                  <button
+                    class="btn btn-primary btn-lg text-uppercase" type="submit"> Sign Up
+                  </button>
+                    <br />
+                    <br />
+                </div>
+            </div>
+            <small>
+                <p class="text-center">
+                    Already Registered?
+                    <a href="{% url 'home' %}"><b>Log in</b></a>
+                </p>
+            </small>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
