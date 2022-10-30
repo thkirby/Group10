@@ -143,7 +143,7 @@
     <ul class="nav nav-pills mt-1 mx-3" id="pills-tab" role="tablist">
       <li class="nav-item" role="presentation">
             <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home"
-                    type="button" role="tab" aria-controls="pills-home" aria-selected="true">Posts</button>
+                    type="button" role="tab" aria-controls="pills-home" aria-selected="true">Timeline</button>
       </li>
       <li class="nav-item" role="presentation">
         <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile"
@@ -154,58 +154,90 @@
                 type="button" role="tab" aria-controls="pills-contact" aria-selected="false">Friends</button>
       </li>
       <li class="nav-item" role="presentation">
-        <button class="nav-link" id="pills-disabled-tab" data-bs-toggle="pill" data-bs-target="#pills-disabled"
-                type="button" role="tab" aria-controls="pills-disabled" aria-selected="false">Photos</button>
+        <button class="nav-link" id="pills-photos-tab" data-bs-toggle="pill" data-bs-target="#pills-photos"
+                type="button" role="tab" aria-controls="pills-photos" aria-selected="false">Photos</button>
       </li>
     </ul>
     <div class="tab-content mx-4 pt-2" id="pills-tabContent">
         <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab" tabindex="0">
-            <a class="fs-6 text-decoration-none " href="{% url 'create_post' %}">Add post</a>
-              <div class="col-md-7 me-4">
-                {% for post in posts %}
-                <div class="card card-signin my-3">
-                  <div class="card-body">
-                    <a href="{{ post.username.profile.get_absolute_url }}"><img src="{{ post.username.profile.profile_pic.url }}" class="rounded-circle" width="30" height="30" alt=""></a>
-                    <a class="text-dark" href="{{ post.username.profile.get_absolute_url }}"><b>{{ post.username }}</b></a>
-                    <br><small class="text-muted">Posted on {{ post.date_posted }}</small>
-                    <br><br>
-                    <p class="card-text text-dark">{{ post.description }}</p>
-                    {% if post.pic %}
-                        <img src="{{ post.pic.url }}" alt=" " style="max-block-size: 300px">
-                    {% endif %}
+            <button type="button" class="btn text-primary fw-bolder" data-bs-toggle="modal" data-bs-target="#post"
+                        style="max-width: fit-content">Add a post
+            </button>
+            <!-- Modal -->
+            <div class="modal fade" id="post" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content" style="width: 800px">
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Create Post</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
-                  {% if post.tags %}
-                  <br>
-                  <p class="text-danger ml-3"><b>Tags: <i>{{ post.tags }}</i></b></p>
-                  {% endif %}
-                  <div class="card-footer">
-                    <button class="btn btn-white mr-3 like" id="{{ post.id }}">
-                    </button>
+                    <div class="modal-body">
+                        <div class="row justify-content-center" style="width: 800px">
+                              <div class="col-sm-9 col-md-7 col-lg-5 me-5">
+                                    <form class="form-signin" method = "POST" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    <fieldset class="form-group"><br>
+                                        {{ post_form | crispy }}
+                                    </fieldset>
+                                    <div class="form-group text-center">
+                                        <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Post</button><br>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
                   </div>
                 </div>
+              <div class="col-md-5 me-4">
+                {% for post in post%}
+                    <div class="card card-signin my-3">
+                      <div class="card-body">
+                        <a class="stretched-link" href="{% url 'post-detail' post.pk %}"></a>
+                        {% if not request.user == post.username%}
+                            <a href="{{ post.username.profile.get_absolute_url }}"><img src="{{ post.username.profile.profile_pic.url }}" class="rounded-circle" width="30" height="30" alt=""></a>
+                            <a class="text-dark" href="{{ post.username.profile.get_absolute_url }}"><b>{{ post.username }}</b></a>
+                        {% else %}
+                            <a href="{% url 'home' %}"><img src="{{ post.username.profile.profile_pic.url }}" class="rounded-circle" width="30" height="30" alt=""></a>
+                            <a class="text-dark" href="{% url 'home' %}"><b>{{ post.username }}</b></a>
+                        {% endif %}
+                        <br><small class="text-muted">Posted on {{ post.date_posted }}</small>
+                        <br><br>
+                        <p class="text-dark">{{ post.description }}</p>
+                        {% if post.pic %}
+                            <img class="mx-auto d-block" src="{{ post.pic.url }}" alt=" " style="max-block-size: 300px">
+                        {% endif %}
+                      </div>
+                      {% if post.tags %}
+                      <br>
+                      <p class="fs-6 text-dark ml-3 ms-2"><b>Tags: <i>{{ post.tags }}</i></b></p>
+                      {% endif %}
+                      <div class="card-footer">
+                        <button class="btn btn-primary btn-sm mr-3 like" id="{{ post.id }}">
+                            Like
+                        </button>
+                      </div>
+                    </div>
                 {% endfor %}
               </div>
-    {% if is_paginated %}
 
-          {% if page_obj.has_previous %}
-            <a class="btn btn-outline-info mb-4" href="?page=1">First</a>
-            <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.previous_page_number }}">Previous</a>
-          {% endif %}
+                {% if posts.has_previous %}
+                    <a class="btn btn-outline-primary mb-4" href="?page=1">First</a>
+                    <a class="btn btn-outline-primary mb-4" href="?page={{ posts.previous_page_number }}">Previous</a>
+                {% endif %}
 
-          {% for num in page_obj.paginator.page_range %}
-            {% if page_obj.number == num %}
-              <a class="btn btn-info mb-4" href="?page={{ num }}">{{ num }}</a>
-            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-              <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>
-            {% endif %}
-          {% endfor %}
+                {% for num in posts.paginator.page_range %}
+                    {% if posts.number == num %}
+                      <a class="btn btn-primary mb-4" href="?page={{ num }}">{{ num }}</a>
+                    {% elif num > posts.number|add:'-3' and num < posts.number|add:'3' %}
+                      <a class="btn btn-outline-primary mb-4" href="?page={{ num }}">{{ num }}</a>
+                    {% endif %}
+                {% endfor %}
 
-          {% if page_obj.has_next %}
-            <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.next_page_number }}">Next</a>
-            <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
-          {% endif %}
-
-        {% endif %}
+                {% if posts.has_next %}
+                    <a class="btn btn-outline-primary mb-4" href="?page={{ posts.next_page_number }}">Next</a>
+                    <a class="btn btn-outline-primary mb-4" href="?page={{ posts.paginator.num_pages }}">Last</a>
+                {% endif %}
         </div>
         <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab" tabindex="0">
               <div class="list-group mt-2" style="max-width: 400px">
@@ -264,7 +296,34 @@
           {% endif %}
         </div>
     </div>
-    <div class="tab-pane fade" id="pills-disabled" role="tabpanel" aria-labelledby="pills-disabled-tab" tabindex="0">:)</div>
+    <div class="tab-pane fade" id="pills-photos" role="tabpanel" aria-labelledby="pills-photos-tab" tabindex="0">:)</div>
 </div>
 </div>
 {% endblock content %}
+
+{% block jsfiles %}
+<script>
+	$(".like").click(function (e) {
+    var id = this.id;
+    var href = $('.like').find('a').attr('href');
+    e.preventDefault();
+
+    $.ajax({
+        url: href,
+        data: {
+          'likeId': id
+        },
+        success: function(response){
+          if(response.liked){
+            $('#likebtn' + id).html("Unlike");
+            $('#likebtn' + id).css("color", "red")
+          }
+          else{
+            $('#likebtn' + id).html("Like");
+            $('#likebtn' + id).css("color", "green")
+          }
+        }
+      })
+});
+</script>
+{% endblock jsfiles %}

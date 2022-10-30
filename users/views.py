@@ -1,13 +1,15 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.paginator import Paginator
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.views import View
-
+import json
 from .models import Profile, FriendRequest
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from .forms import UserRegistrationForm, UserUpdateForm, ProfileUpdateForm
+from .forms import UserRegistrationForm, UserUpdateForm, ProfileUpdateForm, NewPostForm
 from feed.models import Post, Like
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.http import HttpResponseRedirect
 from django.views.generic import ListView, UpdateView, DeleteView
 import random
@@ -134,41 +136,59 @@ def register(request):
     return render(request, 'users/register.html', {'form': form})
 
 
-class profile(View):
+class profile(LoginRequiredMixin, ListView):
+
     def get(self, request, *args, **kwargs):
-        if request.user.is_authenticated:
-            active_profile = request.user.profile
-            active_user = active_profile.user
-            sent_friend_requests = FriendRequest.objects.filter(from_user=active_profile.user)
-            rec_friend_requests = FriendRequest.objects.filter(to_user=active_profile.user)
-            friends = active_profile.friends.all()
-            posts = Post.objects.all().order_by('-date_posted')
+        active_profile = request.user.profile
+        active_user = active_profile.user
+        sent_friend_requests = FriendRequest.objects.filter(from_user=active_profile.user)
+        rec_friend_requests = FriendRequest.objects.filter(to_user=active_profile.user)
+        friends = active_profile.friends.all()
+        paginator = Paginator(Post.objects.all().order_by('-date_posted'), 10)
+        page = request.GET.get('page')
+        posts = paginator.get_page(page)
+        form = NewPostForm()
+        liked = [i for i in Post.objects.all() if Like.objects.filter(user=active_profile.user, post=i)]
 
-            button_status = 'none'
-            if active_profile not in request.user.profile.friends.all():
-                button_status = 'not_friend'
+        button_status = 'none'
 
-                # if we have sent him a friend request
-                if len(FriendRequest.objects.filter(
-                        from_user=request.user).filter(to_user=active_profile.user)) == 1:
-                    button_status = 'friend_request_sent'
+        if active_profile not in request.user.profile.friends.all():
+            button_status = 'not_friend'
+            post = Post.objects.filter(username=active_profile.user).order_by('-date_posted')
+            # if we have sent him a friend request
+            if len(FriendRequest.objects.filter(
+                    from_user=request.user).filter(to_user=active_profile.user)) == 1:
+                button_status = 'friend_request_sent'
 
-                if len(FriendRequest.objects.filter(
-                        from_user=active_profile.user).filter(to_user=request.user)) == 1:
-                    button_status = 'friend_request_received'
+            if len(FriendRequest.objects.filter(
+                    from_user=active_profile.user).filter(to_user=request.user)) == 1:
+                button_status = 'friend_request_received'
 
-            context = {
-                'u': active_user,
-                'button_status': button_status,
-                'friends_list': friends,
-                'sent_friend_requests': sent_friend_requests,
-                'rec_friend_requests': rec_friend_requests,
-                'posts': posts
-            }
-            return render(request, 'users/profile.html', context)
+        context = {
+            'u': active_user,
+            'button_status': button_status,
+            'friends_list': friends,
+            'sent_friend_requests': sent_friend_requests,
+            'rec_friend_requests': rec_friend_requests,
+            'liked_post': liked,
+            'post_form': form,
+            'posts': posts,
+            'post': post,
+        }
+        return render(request, 'users/profile.html', context)
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        form = NewPostForm(request.POST)
+        if form.is_valid():
+            data = form.save(commit=False)
+            data.username = user
+            data.save()
+            messages.success(request, f'Posted Successfully')
+            return redirect('home')
         else:
-            messages.warning(request, f'Please log in to access your profile')
-            return redirect('login')
+            form = NewPostForm()
+        return redirect('home')
 
 
 def edit_profile(request):

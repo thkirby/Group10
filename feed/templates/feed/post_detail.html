@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+{% extends 'feed/base.html' %} {% load crispy_forms_tags %}
+{% block content %}
+    {% include 'feed/navbar.html' %}
+    <div class="container">
+        <div class="row justify-content-center mt-2">
+            <div class="p-3">
+            <a type="button" class="btn text-primary fw-bolder" href="{% url 'home' %}"
+                        style="max-width: fit-content">Back to Profile
+            </a>
+            </div>
+            <div class="col-md-5 col-sm-6">
+            <div class="card card-signin my-3">
+                  <div class="card-body">
+                    <a href="{{ post.username.profile.get_absolute_url }}"><img src="{{ post.username.profile.profile_pic.url }}" class="rounded-circle" width="30" height="30" alt=""></a>
+                    <a class="text-dark" href="{{ post.username.profile.get_absolute_url }}"><b>{{ post.username }}</b></a>
+                    <br><small class="text-muted">Posted on {{ post.date_posted }}</small>
+                    <br><br>
+                    <p class="card-text text-dark">{{ post.description }}</p>
+                    {% if post.pic %}
+                        <img class="mx-auto d-block" src="{{ post.pic.url }}" alt=" " style="max-block-size: 300px">
+                    {% endif %}
+                  </div>
+                  {% if post.tags %}
+                  <br>
+                  <p class="fs-6 text-dark ml-3 ms-2"><b>Tags: <i>{{ post.tags }}</i></b></p>
+                  {% endif %}
+                  <div class="card-footer">
+                    <button class="btn mr-3 like" id="{{ post.id }}">
+			        {% if is_liked %}
+			            <a type="button" class="btn btn-danger btn-sm shadow-none" href="{% url 'post-like' %}" id="likebtn{{ post.id }}"> Unlike</a>
+			        {% else %}
+			            <a type="button" class="btn btn-primary btn-sm shadow-none" href="{% url 'post-like' %}" id="likebtn{{ post.id }}"> Like</a>
+			        {% endif %}
+			        </button>
+                      <div class="row" style="width: 800px">
+                              <div class="col-sm-9 col-md-7 col-lg-5 me-5">
+                                    <form class="form-signin" method = "POST" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    <fieldset class="form-group"><br>
+                                        {{ comment_form | crispy }}
+                                    </fieldset>
+                                    <div class="form-group">
+                                        <button class="btn btn-primary btn-block text-uppercase" type="submit">Post Comment</button><br>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                      {% include 'feed/post_delete.html' %}
+                  </div>
+                </div>
+            </div>
+        </div>
+        {% for comment in comments %}
+        <div class="row justify-content-center mt-2 border-bottom">
+            {% if not request.user == comment.username%}
+                <a href="{{ comment.username.profile.get_absolute_url }}"><img src="{{ comment.username.profile.profile_pic.url }}" class="rounded-circle" width="30" height="30" alt=""></a>
+                <a class="text-dark" href="{{ comment.username.profile.get_absolute_url }}"><b>{{ comment.username }}</b></a>
+            {% else %}
+                <a href="{% url 'home' %}"><img src="{{ comment.username.profile.profile_pic.url }}" class="rounded-circle" width="30" height="30" alt=""></a>
+                <a class="text-dark" href="{% url 'home' %}"><b>{{ comment.username }}</b></a>
+            {% endif %}
+            <br><small class="text-muted">Posted on {{ comment.comment_date }}</small>
+            <br><br>
+            <p class="text-dark">{{ comment.comment }}</p>
+            {% if request.user == comment.username%}
+            <div>
+                 {% include 'feed/comment_delete.html' %}
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+{% endblock content %}
+
+{% block jsfiles %}
+<script>
+	$(".like").click(function (e) {
+    var id = this.id;
+    var href = $('.like').find('a').attr('href');
+    e.preventDefault();
+
+    $.ajax({
+        url: href,
+        data: {
+          'likeId': id
+        },
+        success: function(response){
+          if(response.liked){
+              $('#likebtn' + id).html("Unlike");
+              $('#likebtn' + id).css("background-color", "#dc3545")
+              $('#likebtn' + id).css("border-color", "#dc3545")
+          }
+          else{
+              $('#likebtn' + id).html("Like");
+              $('#likebtn' + id).css("background-color", "#007bff")
+              $('#likebtn' + id).css("border-color", "#007bff")
+
+          }
+        }
+      })
+});
+</script>
+{% endblock jsfiles %}

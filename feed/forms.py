@@ -1,8 +1,11 @@
 from django import forms
-from .models import Post
+from .models import Post, Comment
 
 
-class NewPostForm(forms.ModelForm):
+class NewCommentForm(forms.ModelForm):
+    comment = forms.CharField(label='', max_length=255, widget=forms.Textarea(
+        attrs={'rows': '3', 'placeholder': 'Enter a comment...'}))
+
     class Meta:
-        model = Post
-        fields = ['description', 'pic', 'tags']
+        model = Comment
+        fields = ['comment']

@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from .models import Profile
+from feed.models import Post
 
 
 class UserRegistrationForm(UserCreationForm):
@@ -24,3 +25,12 @@ class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ['profile_pic', 'name', 'birthdate', 'location', 'bio']
+
+
+class NewPostForm(forms.ModelForm):
+    description = forms.CharField(label='', widget=forms.Textarea(
+        attrs={'rows': '4', 'placeholder': 'Write something...'}))
+
+    class Meta:
+        model = Post
+        fields = ['description', 'pic', 'tags']
