@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
-from .views import Index, CreatePost, PostDetailView
+from .views import Index, CreatePost, PostDetailView, SharePostView
 from . import views
 
 
@@ -11,4 +11,5 @@ urlpatterns = [
     path('post/delete/<int:pk>', views.post_delete, name='post-delete'),
     path('post/comment/delete/<int:pk>', views.comment_delete, name='comment-delete'),
     path('like/', views.like, name='post-like'),
+    path('share/', SharePostView.as_view(), name='share-post'),
 ]

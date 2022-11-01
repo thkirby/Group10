@@ -8,6 +8,7 @@ from .models import Profile, FriendRequest
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from .forms import UserRegistrationForm, UserUpdateForm, ProfileUpdateForm, NewPostForm
+from feed.forms import SharePostForm
 from feed.models import Post, Like
 from django.http import JsonResponse, HttpResponse
 from django.http import HttpResponseRedirect
@@ -143,18 +144,23 @@ class profile(LoginRequiredMixin, ListView):
         active_user = active_profile.user
         sent_friend_requests = FriendRequest.objects.filter(from_user=active_profile.user)
         rec_friend_requests = FriendRequest.objects.filter(to_user=active_profile.user)
-        friends = active_profile.friends.all()
-        paginator = Paginator(Post.objects.all().order_by('-date_posted'), 10)
+        friends_list = active_profile.friends.all()
+        form = NewPostForm()
+        share_form = SharePostForm()
+        liked = [i for i in Post.objects.all() if Like.objects.filter(user=active_profile.user, post=i)]
+        button_status = 'none'
+        post_filter = [active_profile]
+        friend = active_profile.friends.all()
+        for f in friend:
+            if f in post_filter:
+                friend = friend.filter(user=f.user)
+        post_filter += friend
+        paginator = Paginator(Post.objects.filter(username__profile__in=post_filter).order_by('-date_posted'), 10)
         page = request.GET.get('page')
         posts = paginator.get_page(page)
-        form = NewPostForm()
-        liked = [i for i in Post.objects.all() if Like.objects.filter(user=active_profile.user, post=i)]
-
-        button_status = 'none'
 
         if active_profile not in request.user.profile.friends.all():
             button_status = 'not_friend'
-            post = Post.objects.filter(username=active_profile.user).order_by('-date_posted')
             # if we have sent him a friend request
             if len(FriendRequest.objects.filter(
                     from_user=request.user).filter(to_user=active_profile.user)) == 1:
@@ -167,19 +173,19 @@ class profile(LoginRequiredMixin, ListView):
         context = {
             'u': active_user,
             'button_status': button_status,
-            'friends_list': friends,
+            'friends_list': friends_list,
             'sent_friend_requests': sent_friend_requests,
             'rec_friend_requests': rec_friend_requests,
-            'liked_post': liked,
+            'is_liked': liked,
             'post_form': form,
+            'share_form': share_form,
             'posts': posts,
-            'post': post,
         }
         return render(request, 'users/profile.html', context)
 
     def post(self, request, *args, **kwargs):
         user = request.user
-        form = NewPostForm(request.POST)
+        form = NewPostForm(request.POST, request.FILES)
         if form.is_valid():
             data = form.save(commit=False)
             data.username = user

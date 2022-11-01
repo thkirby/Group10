@@ -5,11 +5,16 @@ from django.utils import timezone
 
 
 class Post(models.Model):
+    shared_description = models.TextField(blank=True, null=True)
     description = models.CharField(max_length=255, blank=True)
     pic = models.ImageField(upload_to='social_pics', blank=True)
     date_posted = models.DateTimeField(default=timezone.now)
+    shared_date = models.DateTimeField(blank=True, null=True)
     username = models.ForeignKey(User, on_delete=models.CASCADE)
-    tags = models.CharField(max_length=100, blank=True)
+    shared_username = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name='+')
+
+    class Meta:
+        ordering = ['-date_posted', '-shared_date']
 
     def __str__(self):
         return self.description

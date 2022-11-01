@@ -5,10 +5,11 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.urls import reverse
 from django.contrib import messages
+from django.utils import timezone
 from django.core.paginator import Paginator
 from django.contrib.auth.models import User
 from users.forms import NewPostForm
-from .forms import NewCommentForm
+from .forms import NewCommentForm, SharePostForm
 from django.views.generic import ListView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -111,3 +112,20 @@ def like(request):
     }
     response = json.dumps(resp)
     return HttpResponse(response, content_type="application/json")
+
+
+class SharePostView(View):
+    def post(self, request, pk, *args, **kwargs):
+        original_post = Post.objects.get(pk=pk)
+        form = SharePostForm(request.POST)
+
+        if form.is_valid():
+            share_post = Post(shared_description=self.request.POST.get('description'),
+                              description=original_post.description,
+                              username=original_post.username,
+                              date_posted=original_post.date_posted,
+                              pic=original_post.pic,
+                              shared_username=request.user,
+                              shared_date=timezone.now)
+            share_post.save()
+        return redirect('home')

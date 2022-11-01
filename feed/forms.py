@@ -1,5 +1,5 @@
 from django import forms
-from .models import Post, Comment
+from .models import Comment
 
 
 class NewCommentForm(forms.ModelForm):
@@ -9,3 +9,8 @@ class NewCommentForm(forms.ModelForm):
     class Meta:
         model = Comment
         fields = ['comment']
+
+
+class SharePostForm(forms.Form):
+    description = forms.CharField(label='', widget=forms.Textarea(attrs={
+        'rows': '4', 'placeholder': 'Type something...'}))

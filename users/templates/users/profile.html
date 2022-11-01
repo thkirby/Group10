@@ -1,4 +1,4 @@
-{% extends 'feed/base.html' %} {% load crispy_forms_tags %}
+{% extends 'feed/base.html' %} {% load crispy_forms_tags %} {% load static %}
 {% block content %}
 {% include 'feed/navbar.html' %}
 {% if messages %}
@@ -190,10 +190,10 @@
                   </div>
                 </div>
               <div class="col-md-5 me-4">
-                {% for post in post%}
+                {% for post in posts%}
                     <div class="card card-signin my-3">
                       <div class="card-body">
-                        <a class="stretched-link" href="{% url 'post-detail' post.pk %}"></a>
+                        <!--<a class="stretched-link" href="{% url 'post-detail' post.pk %}"></a> --->
                         {% if not request.user == post.username%}
                             <a href="{{ post.username.profile.get_absolute_url }}"><img src="{{ post.username.profile.profile_pic.url }}" class="rounded-circle" width="30" height="30" alt=""></a>
                             <a class="text-dark" href="{{ post.username.profile.get_absolute_url }}"><b>{{ post.username }}</b></a>
@@ -213,14 +213,22 @@
                       <p class="fs-6 text-dark ml-3 ms-2"><b>Tags: <i>{{ post.tags }}</i></b></p>
                       {% endif %}
                       <div class="card-footer">
-                        <button class="btn btn-primary btn-sm mr-3 like" id="{{ post.id }}">
-                            Like
-                        </button>
+                         <button class="btn like" id="{{ post.id }}">
+                             {% if post in is_liked %}
+                                 <a type="button" class="btn btn-danger btn-sm" href="{% url 'post-like' %}" id="likebtn{{ post.id }}"> Unlike</a>
+                             {% else %}
+                                 <a type="button" class="btn btn-primary btn-sm" href="{% url 'post-like' %}" id="likebtn{{ post.id }}"> Like</a>
+                             {% endif %}
+                         </button>
+                      <form class="d-share" method="POST" action="{% url 'share-post' %}" id="{{ post.id }}">
+                            {% csrf_token %}
+                            {{ share_form | crispy }}
+                        </form>
+                          <button class="btn btn-success btn-sm mt-1" onclick="ShareButton({{ post.pk }})">Share Post</button>
                       </div>
                     </div>
                 {% endfor %}
               </div>
-
                 {% if posts.has_previous %}
                     <a class="btn btn-outline-primary mb-4" href="?page=1">First</a>
                     <a class="btn btn-outline-primary mb-4" href="?page={{ posts.previous_page_number }}">Previous</a>
@@ -315,15 +323,19 @@
         },
         success: function(response){
           if(response.liked){
-            $('#likebtn' + id).html("Unlike");
-            $('#likebtn' + id).css("color", "red")
+              $('#likebtn' + id).html("Unlike");
+              $('#likebtn' + id).css("background-color", "#dc3545")
+              $('#likebtn' + id).css("border-color", "#dc3545")
           }
           else{
-            $('#likebtn' + id).html("Like");
-            $('#likebtn' + id).css("color", "green")
+              $('#likebtn' + id).html("Like");
+              $('#likebtn' + id).css("background-color", "#007bff")
+              $('#likebtn' + id).css("border-color", "#007bff")
+
           }
         }
       })
 });
 </script>
+<script type="text/javascript" src={% static 'js/feed.js' %}></script>
 {% endblock jsfiles %}
