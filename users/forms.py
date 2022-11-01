@@ -25,12 +25,3 @@ class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ['profile_pic', 'name', 'birthdate', 'location', 'bio']
-
-
-class NewPostForm(forms.ModelForm):
-    description = forms.CharField(label='', widget=forms.Textarea(
-        attrs={'rows': '4', 'placeholder': 'Type something...'}))
-
-    class Meta:
-        model = Post
-        fields = ['description', 'pic']

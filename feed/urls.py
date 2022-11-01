@@ -11,5 +11,5 @@ urlpatterns = [
     path('post/delete/<int:pk>', views.post_delete, name='post-delete'),
     path('post/comment/delete/<int:pk>', views.comment_delete, name='comment-delete'),
     path('like/', views.like, name='post-like'),
-    path('share/', SharePostView.as_view(), name='share-post'),
+    path('share/<int:pk>', SharePostView.as_view(), name='share-post'),
 ]

@@ -4,12 +4,14 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.views import View
 import json
+from django.utils import timezone
 from .models import Profile, FriendRequest
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from .forms import UserRegistrationForm, UserUpdateForm, ProfileUpdateForm, NewPostForm
-from feed.forms import SharePostForm
+from .forms import UserRegistrationForm, UserUpdateForm, ProfileUpdateForm
+from feed.forms import NewPostForm, SharePostForm
 from feed.models import Post, Like
+from feed.views import SharePostView
 from django.http import JsonResponse, HttpResponse
 from django.http import HttpResponseRedirect
 from django.views.generic import ListView, UpdateView, DeleteView
@@ -138,7 +140,6 @@ def register(request):
 
 
 class profile(LoginRequiredMixin, ListView):
-
     def get(self, request, *args, **kwargs):
         active_profile = request.user.profile
         active_user = active_profile.user
@@ -151,10 +152,12 @@ class profile(LoginRequiredMixin, ListView):
         button_status = 'none'
         post_filter = [active_profile]
         friend = active_profile.friends.all()
+
         for f in friend:
             if f in post_filter:
                 friend = friend.filter(user=f.user)
         post_filter += friend
+
         paginator = Paginator(Post.objects.filter(username__profile__in=post_filter).order_by('-date_posted'), 10)
         page = request.GET.get('page')
         posts = paginator.get_page(page)
@@ -190,7 +193,6 @@ class profile(LoginRequiredMixin, ListView):
             data = form.save(commit=False)
             data.username = user
             data.save()
-            messages.success(request, f'Posted Successfully')
             return redirect('home')
         else:
             form = NewPostForm()
@@ -234,7 +236,7 @@ def profile_view(request, slug):
         if user_profile not in request.user.profile.friends.all():
             button_status = 'not_friend'
 
-            # if active user has sent friend request to viewed profile
+            # if current user has sent friend request to viewed profile
             if len(FriendRequest.objects.filter(
                     from_user=request.user).filter(to_user=user_profile.user)) == 1:
                 button_status = 'friend_request_sent'
@@ -257,3 +259,6 @@ def profile_view(request, slug):
     }
 
     return render(request, "users/profile_view.html", context)
+
+
+

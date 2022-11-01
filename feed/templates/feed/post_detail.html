@@ -52,7 +52,7 @@
             </div>
         </div>
         {% for comment in comments %}
-        <div class="row justify-content-center mt-2 border-bottom">
+        <div class="row mb-4 border-bottom">
             {% if not request.user == comment.username%}
                 <a href="{{ comment.username.profile.get_absolute_url }}"><img src="{{ comment.username.profile.profile_pic.url }}" class="rounded-circle" width="30" height="30" alt=""></a>
                 <a class="text-dark" href="{{ comment.username.profile.get_absolute_url }}"><b>{{ comment.username }}</b></a>
@@ -62,7 +62,7 @@
             {% endif %}
             <br><small class="text-muted">Posted on {{ comment.comment_date }}</small>
             <br><br>
-            <p class="text-dark">{{ comment.comment }}</p>
+            <p class="text-dark text-break">{{ comment.comment }}</p>
             {% if request.user == comment.username%}
             <div>
                  {% include 'feed/comment_delete.html' %}

@@ -8,8 +8,7 @@ from django.contrib import messages
 from django.utils import timezone
 from django.core.paginator import Paginator
 from django.contrib.auth.models import User
-from users.forms import NewPostForm
-from .forms import NewCommentForm, SharePostForm
+from .forms import NewCommentForm, NewPostForm, SharePostForm
 from django.views.generic import ListView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -117,15 +116,17 @@ def like(request):
 class SharePostView(View):
     def post(self, request, pk, *args, **kwargs):
         original_post = Post.objects.get(pk=pk)
-        form = SharePostForm(request.POST)
+        share_form = SharePostForm(request.POST)
 
-        if form.is_valid():
+        if share_form.is_valid():
             share_post = Post(shared_description=self.request.POST.get('description'),
                               description=original_post.description,
                               username=original_post.username,
                               date_posted=original_post.date_posted,
                               pic=original_post.pic,
                               shared_username=request.user,
-                              shared_date=timezone.now)
+                              shared_date=timezone.now())
             share_post.save()
+        else:
+            share_form = SharePostForm()
         return redirect('home')
