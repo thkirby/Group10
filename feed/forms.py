@@ -22,4 +22,4 @@ class NewPostForm(forms.ModelForm):
 
 class SharePostForm(forms.Form):
     description = forms.CharField(label='', widget=forms.Textarea(attrs={
-        'rows': '4', 'placeholder': 'Type something...'}))
+                                'rows': '4', 'placeholder': 'Type something...'}))

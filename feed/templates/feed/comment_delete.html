@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 {% extends 'feed/base.html' %}
 {% block content %}
-    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deletecomment">
-        <i class="fa-solid fa-trash"></i>
-    </button>
+    {% if request.user == comment.username %}
+    <a type="button" class="float-sm-start" data-bs-toggle="modal" data-bs-target="#deletepost"
+                        style="color: crimson"><i class="fa-solid fa-trash"></i>
+    </a>
+    {% endif %}
     <!-- Modal -->
     <div class="modal fade" id="deletecomment" tabindex="-1" aria-labelledby="deletecommentModalTitle" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">

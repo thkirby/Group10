@@ -6,13 +6,10 @@ from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.urls import reverse
 from django.contrib import messages
 from django.utils import timezone
-from django.core.paginator import Paginator
-from django.contrib.auth.models import User
 from .forms import NewCommentForm, NewPostForm, SharePostForm
 from django.views.generic import ListView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.views.decorators.http import require_POST
 import json
 from .models import Post, Like, Comment
 
@@ -86,7 +83,7 @@ def comment_delete(request, pk):
 
 class PostEditView(LoginRequiredMixin, UpdateView):
     model = Post
-    fields = ['description']
+    fields = ['description', 'pic']
     template_name = 'feed/post_edit.html'
 
     def get_success_url(self):
@@ -130,3 +127,4 @@ class SharePostView(View):
         else:
             share_form = SharePostForm()
         return redirect('home')
+

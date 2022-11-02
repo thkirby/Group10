@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 {% extends 'feed/base.html' %}
 {% block content %}
-    <button type="button" class="btn btn-danger btn-sm float-end" data-bs-toggle="modal" data-bs-target="#deletepost"
-                        style="max-width: fit-content">Delete
-    </button>
+    {% if request.user == post.username %}
+    <a type="button" class="float-end" data-bs-toggle="modal" data-bs-target="#deletepost"
+                        style="color: crimson"><i class="fa-solid fa-trash"></i>
+    </a>
+    {% endif %}
     <!-- Modal -->
     <div class="modal fade" id="deletepost" tabindex="-1" aria-labelledby="deletepostModalTitle" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">

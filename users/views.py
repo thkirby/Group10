@@ -1,3 +1,5 @@
+from django.db.models import Max
+from django.db.models.functions import Coalesce
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.shortcuts import render, redirect, get_object_or_404
@@ -157,20 +159,18 @@ class profile(LoginRequiredMixin, ListView):
             if f in post_filter:
                 friend = friend.filter(user=f.user)
         post_filter += friend
-
-        paginator = Paginator(Post.objects.filter(username__profile__in=post_filter).order_by('-date_posted'), 10)
+        paginator = Paginator(Post.objects.filter(username__profile__in=post_filter).annotate(lr=Coalesce(Max('shared_date'), 'date_posted'))
+                              .order_by('-lr'), 10)
         page = request.GET.get('page')
         posts = paginator.get_page(page)
 
         if active_profile not in request.user.profile.friends.all():
             button_status = 'not_friend'
             # if we have sent him a friend request
-            if len(FriendRequest.objects.filter(
-                    from_user=request.user).filter(to_user=active_profile.user)) == 1:
+            if len(FriendRequest.objects.filter(from_user=request.user).filter(to_user=active_profile.user)) == 1:
                 button_status = 'friend_request_sent'
 
-            if len(FriendRequest.objects.filter(
-                    from_user=active_profile.user).filter(to_user=request.user)) == 1:
+            if len(FriendRequest.objects.filter(from_user=active_profile.user).filter(to_user=request.user)) == 1:
                 button_status = 'friend_request_received'
 
         context = {
@@ -230,7 +230,21 @@ def profile_view(request, slug):
     sent_friend_requests = FriendRequest.objects.filter(from_user=user_profile.user)
     rec_friend_requests = FriendRequest.objects.filter(to_user=user_profile.user)
     friends = user_profile.friends.all()
+    liked = [i for i in Post.objects.all() if Like.objects.filter(user=request.user, post=i)]
     button_status = 'none'
+    post_filter = [user_profile]
+    friend = user_profile.friends.all()
+
+    for f in friend:
+        if f in post_filter:
+            friend = friend.filter(user=f.user)
+    post_filter += friend
+
+    paginator = Paginator(
+        Post.objects.filter(username__profile__in=post_filter).annotate(lr=Coalesce(Max('shared_date'), 'date_posted'))
+        .order_by('-lr'), 10)
+    page = request.GET.get('page')
+    posts = paginator.get_page(page)
 
     if request.user.is_authenticated:
         if user_profile not in request.user.profile.friends.all():
@@ -250,12 +264,13 @@ def profile_view(request, slug):
             'friends_list': friends,
             'sent_friend_requests': sent_friend_requests,
             'rec_friend_requests': rec_friend_requests,
+            'is_liked': liked,
+            'posts': posts,
         }
-        return render(request, "users/profile.html", context)
+        return render(request, "users/profile_view.html", context)
 
     context = {
         'u': user,
-        'friends_list': friends,
     }
 
     return render(request, "users/profile_view.html", context)
