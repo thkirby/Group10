@@ -4,19 +4,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from django.views import View
-import json
-from django.utils import timezone
 from .models import Profile, FriendRequest
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from .forms import UserRegistrationForm, UserUpdateForm, ProfileUpdateForm
 from feed.forms import NewPostForm, SharePostForm
 from feed.models import Post, Like
-from feed.views import SharePostView
-from django.http import JsonResponse, HttpResponse
-from django.http import HttpResponseRedirect
-from django.views.generic import ListView, UpdateView, DeleteView
+from django.views.generic import ListView
 import random
 
 User = get_user_model()

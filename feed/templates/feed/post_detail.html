@@ -31,9 +31,11 @@
                   <div class="card-footer">
                     <button class="btn mr-3 like" id="{{ post.id }}">
 			        {% if is_liked %}
-			            <a type="button" class="btn btn-danger btn-sm shadow-none" href="{% url 'post-like' %}" id="likebtn{{ post.id }}"> Unlike</a>
+			            <a type="button" class="btn btn-danger btn-sm shadow-none" href="{% url 'post-like' %}" id="likebtn{{ post.id }}">
+                            <i class="fa-solid fa-heart-crack"></i></a>
 			        {% else %}
-			            <a type="button" class="btn btn-primary btn-sm shadow-none" href="{% url 'post-like' %}" id="likebtn{{ post.id }}"> Like</a>
+			            <a type="button" class="btn btn-primary btn-sm shadow-none" href="{% url 'post-like' %}" id="likebtn{{ post.id }}">
+                            <i class="fa-solid fa-heart"></i></a>
 			        {% endif %}
 			        </button>
                       <div class="row" style="width: 800px">
@@ -114,12 +116,12 @@
         },
         success: function(response){
           if(response.liked){
-              $('#likebtn' + id).html("Unlike");
+              $('#likebtn' + id).html('<i class="fa-solid fa-heart-crack"></i>');
               $('#likebtn' + id).css("background-color", "#dc3545")
               $('#likebtn' + id).css("border-color", "#dc3545")
           }
           else{
-              $('#likebtn' + id).html("Like");
+              $('#likebtn' + id).html('<i class="fa-solid fa-heart"></i>');
               $('#likebtn' + id).css("background-color", "#007bff")
               $('#likebtn' + id).css("border-color", "#007bff")
 

@@ -1,15 +1,13 @@
-from django.shortcuts import render
 from django.views import View
 from django.urls import reverse_lazy
-from django.shortcuts import get_object_or_404, render, redirect
-from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
-from django.urls import reverse
+from django.shortcuts import render, redirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib import messages
 from django.utils import timezone
 from .forms import NewCommentForm, NewPostForm, SharePostForm
-from django.views.generic import ListView, UpdateView, DeleteView
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.views.generic import UpdateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 import json
 from .models import Post, Like, Comment
 

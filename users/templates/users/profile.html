@@ -265,11 +265,11 @@
                       {% if not request.user == post.username and not request.user == post.shared_username%}
                          <button class="btn like float-sm-start" id="{{ post.id }}">
                              {% if post in is_liked %}
-                                 <a type="button" class="btn btn-danger btn-sm" href="{% url 'post-like' %}"
-                                    id="likebtn{{ post.id }}">Unlike</a>
+                                 <a type="icon" class="btn btn-danger btn-sm" href="{% url 'post-like' %}"
+                                    id="likebtn{{ post.id }}"><i class="fa-solid fa-heart-crack"></i></a>
                              {% else %}
-                                 <a type="button" class="btn btn-primary btn-sm" href="{% url 'post-like' %}"
-                                    id="likebtn{{ post.id }}">Like</a>
+                                 <a type="icon" class="btn btn-primary btn-sm" href="{% url 'post-like' %}"
+                                    id="likebtn{{ post.id }}"><i class="fa-solid fa-heart"></i></a>
                              {% endif %}
                          </button>
                           <button class="btn btn-success btn-sm mt-2" onclick="ShareButton({{post.pk}})">Share Post</button>
@@ -372,6 +372,7 @@
 <script>
 	$(".like").click(function (e) {
     var id = this.id;
+    var counter = this.counter;
     var href = $('.like').find('a').attr('href');
     e.preventDefault();
 
@@ -382,12 +383,12 @@
         },
         success: function(response){
           if(response.liked){
-              $('#likebtn' + id).html("Unlike");
+              $('#likebtn' + id).html('<i class="fa-solid fa-heart-crack"></i>');
               $('#likebtn' + id).css("background-color", "#dc3545")
               $('#likebtn' + id).css("border-color", "#dc3545")
           }
           else{
-              $('#likebtn' + id).html("Like");
+              $('#likebtn' + id).html('<i class="fa-solid fa-heart"></i>');
               $('#likebtn' + id).css("background-color", "#007bff")
               $('#likebtn' + id).css("border-color", "#007bff")
 
