@@ -5,7 +5,7 @@
     <div class="container">
         <div class="row justify-content-center mt-2">
             <div class="p-3">
-            <a type="button" class="btn text-primary fw-bolder" href="{% url 'home' %}"
+            <a type="button" class="btn text-primary fw-bolder" href="javascript:history.back()"
                         style="max-width: fit-content">Back to Profile
             </a>
             </div>
@@ -74,10 +74,10 @@
                         </div>
                   </div>
                 </div>
-            </div>
-        </div>
+
+
         {% for comment in comments %}
-        <div class="row mb-4 border-bottom">
+        <div class="row mx-auto mb-4 border-bottom">
             {% if not request.user == comment.username%}
                 <a href="{{ comment.username.profile.get_absolute_url }}"><img src="{{ comment.username.profile.profile_pic.url }}" class="rounded-circle" width="30" height="30" alt=""></a>
                 <a class="text-dark" href="{{ comment.username.profile.get_absolute_url }}"><b>{{ comment.username }}</b></a>
@@ -95,6 +95,8 @@
             {% endif %}
         </div>
         {% endfor %}
+             </div>
+        </div>
     </div>
 {% endblock content %}
 
@@ -126,22 +128,4 @@
       })
 });
 </script>
-<script type="text/javascript">
-
-        document.addEventListener("DOMContentLoaded", () => {
-
-            const modal = document.getElementById('modal-container')
-
-            modal.addEventListener('show.bs.modal', function (event) {
-
-                const link = event.relatedTarget.getAttribute('href');
-                const modalData = document.querySelector('#modal-container');
-
-                fetch(link).then(res => res.text()).then(html => {
-                    modalData.innerHTML = html;
-
-                });
-            });
-        });
-    </script>
 {% endblock jsfiles %}

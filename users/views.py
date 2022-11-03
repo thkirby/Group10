@@ -141,7 +141,7 @@ def register(request):
     return render(request, 'users/register.html', {'form': form})
 
 
-class profile(LoginRequiredMixin, ListView):
+class ActiveProfileView(LoginRequiredMixin, ListView):
     def get(self, request, *args, **kwargs):
         active_profile = request.user.profile
         active_user = active_profile.user

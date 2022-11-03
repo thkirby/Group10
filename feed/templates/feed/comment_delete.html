@@ -2,7 +2,7 @@
 {% extends 'feed/base.html' %}
 {% block content %}
     {% if request.user == comment.username %}
-    <a type="button" class="float-sm-start" data-bs-toggle="modal" data-bs-target="#deletepost"
+    <a type="button" class="float-sm-start" data-bs-toggle="modal" data-bs-target="#deletecomment"
                         style="color: crimson"><i class="fa-solid fa-trash"></i>
     </a>
     {% endif %}

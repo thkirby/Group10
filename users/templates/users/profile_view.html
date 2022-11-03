@@ -172,15 +172,16 @@
                       </div>
                       <div class="card-footer">
                       {% if not request.user == post.username and not request.user == post.shared_username%}
-                         <button class="btn like" id="{{ post.id }}">
+                         <button class="btn like float-sm-start" id="{{ post.id }}">
                              {% if post in is_liked %}
                                  <a type="button" class="btn btn-danger btn-sm" href="{% url 'post-like' %}" id="likebtn{{ post.id }}"> Unlike</a>
                              {% else %}
                                  <a type="button" class="btn btn-primary btn-sm" href="{% url 'post-like' %}" id="likebtn{{ post.id }}"> Like</a>
                              {% endif %}
                          </button>
-                          <button class="btn btn-success btn-sm mt-1" onclick="ShareButton({{post.pk}})">Share Post</button>
+                          <button class="btn btn-success btn-sm mt-2" onclick="ShareButton({{post.pk}})">Share Post</button>
                       {% endif %}
+                      <a class="btn btn-sm btn-primary mt-2 float-end" href="{% url 'post-detail' post.pk %}">View Comments</a>
                       </div>
                     </div>
                 {% endfor %}
@@ -245,7 +246,7 @@
                   <small>
                   {% if request.user == u %}
                       <a
-                      class="btn btn-danger float-right"
+                      class="btn btn-danger"
                       href="{% url 'delete_friend' user_p.id %}"
                       >Unfriend</a>
                   </small>
@@ -292,7 +293,7 @@
           }
           else{
               $('#likebtn' + id).html("Like");
-              $('#likebtn' + id).css("background-color", "#FFFFFF")
+              $('#likebtn' + id).css("background-color", "#007bff")
               $('#likebtn' + id).css("border-color", "#007bff")
 
           }

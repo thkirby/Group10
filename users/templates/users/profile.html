@@ -25,7 +25,8 @@
                 {% endif %}
                 {% if request.user == u %}
                                            <!-- Button trigger modal -->
-                        <button type="button" class="btn btn-primary position-relative" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                        <button type="button" class="btn btn-primary position-relative" data-bs-toggle="modal"
+                                data-bs-target="#exampleModal"
                         style="max-width: fit-content">
                           Friend Requests
                             {% if rec_friend_requests %}
@@ -90,8 +91,10 @@
                                         {{ r_request.from_user.username }}
                                     </a>
                                     <small class="float-right">
-                                      <a class="btn btn-success mr-2" href="{% url 'accept_friend_request' r_request.from_user.id %}">Accept</a>
-                                      <a class="btn btn-danger" href="/users/friend-request/delete/{{ r_request.from_user.id }}">Reject</a>
+                                      <a class="btn btn-success mr-2" href="{% url 'accept_friend_request' r_request.from_user.id %}">
+                                          Accept</a>
+                                      <a class="btn btn-danger" href="/users/friend-request/delete/{{ r_request.from_user.id }}">
+                                          Reject</a>
                                     </small>
                                     <br /><br />
                                     {% endfor %}
@@ -126,7 +129,8 @@
       </li>
     </ul>
     <div class="tab-content mx-4 pt-2" id="pills-tabContent">
-        <div class="tab-pane fade show active" style="outline: none" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab" tabindex="0">
+        <div class="tab-pane fade show active" style="outline: none" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab"
+             tabindex="0">
             <button type="button" class="btn text-primary fw-bolder" data-bs-toggle="modal" data-bs-target="#post"
                         style="max-width: fit-content">Create a post
             </button>
@@ -163,29 +167,37 @@
                       {% if post.shared_username %}
                           <div class="position-relative border-bottom mb-3">
                               {% if not request.user == post.shared_username%}
-                                <a href="{{ post.shared_username.profile.get_absolute_url }}"><img src="{{ post.shared_username.profile.profile_pic.url }}" class="rounded-circle" width="30" height="30" alt=""></a>
+                                <a href="{{ post.shared_username.profile.get_absolute_url }}"><img src="{{ post.shared_username.profile.profile_pic.url }}"
+                                                                                                   class="rounded-circle" width="30"
+                                                                                                   height="30" alt=""></a>
                                 <a class="text-dark" href="{{ post.shared_username.profile.get_absolute_url }}"><b>{{ post.shared_username }}</b></a>
                               {% else %}
-                                <a href="{% url 'home' %}"><img src="{{ post.shared_username.profile.profile_pic.url }}" class="rounded-circle" width="30" height="30" alt=""></a>
+                                <a href="{% url 'home' %}"><img src="{{ post.shared_username.profile.profile_pic.url }}"
+                                                                class="rounded-circle" width="30" height="30" alt=""></a>
                                 <a class="text-dark" href="{% url 'home' %}"><b>{{ post.shared_username }}</b></a>
                               {% endif %}
                               <br><small class="text-muted">Shared on {{post.shared_date}}</small>
                               {% if post.shared_description != none %}
                               <br>
-                              <a class="post-link text-dark text-break text-decoration-none" href="{% url 'post-detail' post.pk%}">{{ post.shared_description }}</a>
+                              <a class="post-link text-dark text-break text-decoration-none" href="{% url 'post-detail' post.pk%}">
+                                  {{ post.shared_description }}</a>
                               {% endif %}
                           </div>
                           <div class="shared-post">
                             {% if not request.user == post.username%}
-                            <a href="{{ post.username.profile.get_absolute_url }}"><img src="{{ post.username.profile.profile_pic.url }}" class="rounded-circle" width="30" height="30" alt=""></a>
+                            <a href="{{ post.username.profile.get_absolute_url }}"><img src="{{ post.username.profile.profile_pic.url }}"
+                                                                                        class="rounded-circle" width="30"
+                                                                                        height="30" alt=""></a>
                             <a class="text-dark" href="{{ post.username.profile.get_absolute_url }}"><b>{{ post.username }}</b></a>
                             {% else %}
-                            <a href="{% url 'home' %}"><img src="{{ post.username.profile.profile_pic.url }}" class="rounded-circle" width="30" height="30" alt=""></a>
+                            <a href="{% url 'home' %}"><img src="{{ post.username.profile.profile_pic.url }}"
+                                                            class="rounded-circle" width="30" height="30" alt=""></a>
                             <a class="text-dark" href="{% url 'home' %}"><b>{{ post.username }}</b></a>
                             {% endif %}
                             <br><small class="text-muted">Posted on {{ post.date_posted }}</small>
                             <br>
-                            <a class="post-link text-dark text-break text-decoration-none" href="{% url 'post-detail' post.pk %}">{{ post.description }}</a>
+                            <a class="post-link text-dark text-break text-decoration-none" href="{% url 'post-detail' post.pk %}">
+                                {{ post.description }}</a>
                             {% if post.pic %}
                                 <img class="mx-auto d-block" src="{{ post.pic.url }}" alt=" " style="max-block-size: 300px">
                             {% endif %}
@@ -220,15 +232,19 @@
                               </div>
                             </div>
                             {% if not request.user == post.username%}
-                            <a href="{{ post.username.profile.get_absolute_url }}"><img src="{{ post.username.profile.profile_pic.url }}" class="rounded-circle" width="30" height="30" alt=""></a>
+                            <a href="{{ post.username.profile.get_absolute_url }}"><img src="{{ post.username.profile.profile_pic.url }}"
+                                                                                        class="rounded-circle" width="30"
+                                                                                        height="30" alt=""></a>
                             <a class="text-dark" href="{{ post.username.profile.get_absolute_url }}"><b>{{ post.username }}</b></a>
                             {% else %}
-                            <a href="{% url 'home' %}"><img src="{{ post.username.profile.profile_pic.url }}" class="rounded-circle" width="30" height="30" alt=""></a>
+                            <a href="{% url 'home' %}"><img src="{{ post.username.profile.profile_pic.url }}"
+                                                            class="rounded-circle" width="30" height="30" alt=""></a>
                             <a class="text-dark" href="{% url 'home' %}"><b>{{ post.username }}</b></a>
                             {% endif %}
                         <br><small class="text-muted">Posted on {{ post.date_posted }}</small>
                         <br>
-                          <a class="post-link text-dark text-break text-decoration-none" href="{% url 'post-detail' post.pk %}">{{ post.description }}</a>
+                          <a class="post-link text-dark text-break text-decoration-none" href="{% url 'post-detail' post.pk %}">
+                              {{ post.description }}</a>
                         <br>
                           {% if post.pic %}
                               <img class="mx-auto d-block" src="{{ post.pic.url }}" alt=" " style="max-block-size: 300px">
@@ -240,21 +256,25 @@
                               {{ share_form | crispy }}
                           </fieldset>
                             <div class="form-group float-end">
-                                        <button class="btn btn-sm btn-primary btn-block text-uppercase" type="submit">Share!</button><br>
+                                        <button class="btn btn-sm btn-primary btn-block text-uppercase" type="submit">
+                                            Share!</button><br>
                             </div>
                       </form>
                       </div>
                       <div class="card-footer">
                       {% if not request.user == post.username and not request.user == post.shared_username%}
-                         <button class="btn like" id="{{ post.id }}">
+                         <button class="btn like float-sm-start" id="{{ post.id }}">
                              {% if post in is_liked %}
-                                 <a type="button" class="btn btn-danger btn-sm" href="{% url 'post-like' %}" id="likebtn{{ post.id }}"> Unlike</a>
+                                 <a type="button" class="btn btn-danger btn-sm" href="{% url 'post-like' %}"
+                                    id="likebtn{{ post.id }}">Unlike</a>
                              {% else %}
-                                 <a type="button" class="btn btn-primary btn-sm" href="{% url 'post-like' %}" id="likebtn{{ post.id }}"> Like</a>
+                                 <a type="button" class="btn btn-primary btn-sm" href="{% url 'post-like' %}"
+                                    id="likebtn{{ post.id }}">Like</a>
                              {% endif %}
                          </button>
-                          <button class="btn btn-success btn-sm mt-1" onclick="ShareButton({{post.pk}})">Share Post</button>
+                          <button class="btn btn-success btn-sm mt-2" onclick="ShareButton({{post.pk}})">Share Post</button>
                       {% endif %}
+                      <a class="btn btn-sm btn-primary mt-2 float-end" href="{% url 'post-detail' post.pk %}">View Comments</a>
                       </div>
                     </div>
                 {% endfor %}
@@ -281,7 +301,8 @@
                 {% endif %}
                 </div>
         </div>
-        <div class="tab-pane fade" id="pills-profile" style="outline: none" role="tabpanel" aria-labelledby="pills-profile-tab" tabindex="0">
+        <div class="tab-pane fade" id="pills-profile" style="outline: none" role="tabpanel" aria-labelledby="pills-profile-tab"
+             tabindex="0">
               <div class="list-group mt-2" style="max-width: 400px">
                 {% if u.profile.name %}
                     <p class="list-group-item"> Name: {{ u.profile.name }}</p>
@@ -300,7 +321,8 @@
                 {% endif %}
             </div>
         </div>
-      <div class="tab-pane fade" id="pills-contact" style="outline: none" role="tabpanel" aria-labelledby="pills-contact-tab" tabindex="0">
+      <div class="tab-pane fade" id="pills-contact" style="outline: none" role="tabpanel" aria-labelledby="pills-contact-tab"
+           tabindex="0">
       <div class="mt-2" style="max-inline-size: fit-content">
         <div class="shadow-sm" style="background-color: white">
         {% if friends_list %}
@@ -319,7 +341,7 @@
                   <small>
                   {% if request.user == u %}
                       <a
-                      class="btn btn-danger float-right"
+                      class="btn btn-danger"
                       href="{% url 'delete_friend' user_p.id %}"
                       >Unfriend</a>
                   </small>
@@ -338,7 +360,8 @@
           {% endif %}
         </div>
     </div>
-    <div class="tab-pane fade" id="pills-photos" style="outline: none" role="tabpanel" aria-labelledby="pills-photos-tab" tabindex="0">:)</div>
+    <div class="tab-pane fade" id="pills-photos" style="outline: none" role="tabpanel" aria-labelledby="pills-photos-tab"
+         tabindex="0">:)</div>
 </div>
 </div>
     </div>
@@ -365,7 +388,7 @@
           }
           else{
               $('#likebtn' + id).html("Like");
-              $('#likebtn' + id).css("background-color", "#FFFFFF")
+              $('#likebtn' + id).css("background-color", "#007bff")
               $('#likebtn' + id).css("border-color", "#007bff")
 
           }
