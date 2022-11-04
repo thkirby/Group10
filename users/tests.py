@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from django.test import TransactionTestCase
 from django.contrib.auth import authenticate
-from feed.models import Post
+from feed.models import Post, Comment, Like
 from feed.models import timezone
 
 
@@ -45,19 +45,19 @@ class TestPost(TestCase):
     def tearDown(self):
         self.post.delete()
 
-# test that post was created
+    # test that post was created
     def test_post_valid(self):
         post_count = Post.objects.all().count()
         self.assertEqual(post_count, 1)
 
-# test that username was created and stored
+    # test that username was created and stored
     def test_post_name(self):
         post = Post.objects.get(pk=1)
         field = post._meta.get_field('username').verbose_name
         self.assertEquals(field, 'username')
 
-    # test that username was created and stored
+    # test that post description was created and stored
     def test_post_description(self):
         post = Post.objects.get(pk=1)
-        field = post._meta.get_field('description').verbose_name
-        self.assertEquals(field, 'description')
+        description = post.description
+        self.assertEquals(description, post.description)
