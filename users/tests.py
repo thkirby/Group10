@@ -4,6 +4,8 @@ from django.test import TransactionTestCase
 from django.contrib.auth import authenticate
 from feed.models import Post, Comment, Like
 from feed.models import timezone
+from users.models import FriendRequest, Profile
+from users.views import *
 
 
 # test cases for login/registration
@@ -61,3 +63,38 @@ class TestPost(TestCase):
         post = Post.objects.get(pk=1)
         description = post.description
         self.assertEquals(description, post.description)
+
+
+# test cases for friend requests
+class TestFriendRequest(TestCase):
+    def setUp(self):
+        self.user = User(username='test')
+        self.user.save()
+        self.user2 = User(username='test2')
+        self.user2.save()
+
+    def tearDown(self):
+        self.user.delete()
+        self.user2.delete()
+
+    # test if friend request is valid
+    def test_valid_fr(self):
+        request = FriendRequest.objects.create(
+            to_user=self.user2,
+            from_user=self.user)
+        sent = request.__str__()
+        self.assertEquals(sent, "From test, to test2")
+
+    # test if friend request is invalid
+    def test_invalid_fr(self):
+        request = FriendRequest.objects.create(
+            to_user=self.user2,
+            from_user=self.user)
+        sent = request.__str__()
+        self.assertFalse(sent is "From test, to test2")
+
+    # test if friend request is accepted
+    def test_accept_fr(self):
+        accept_friend_request(self.request, self.request.id)
+        self.assertEquals(self.user.profile.friends.count(), 1)
+        self.assertEquals(self.user2.profile.friends.count(), 1)
