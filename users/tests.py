@@ -50,7 +50,7 @@ class TestPost(TestCase):
         post_count = Post.objects.all().count()
         self.assertEqual(post_count, 1)
 
-    # test that username was created and stored
+    # test that username field was created and stored
     def test_post_name(self):
         post = Post.objects.get(pk=1)
         field = post._meta.get_field('username').verbose_name
