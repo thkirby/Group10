@@ -13,7 +13,8 @@
         <div class="card shadow-sm col-md-4 col-sm-6 px-3 pt-3 pb-3" style="height: 195px">
             <div class="media">
                 <div class="d-flex">
-                    <img class="rounded-circle account-img" src="{{ u.profile.profile_pic.url }}" width="100" height="100" alt=""/>
+                    <img class="rounded-circle account-img" src="{{ u.profile.profile_pic.url }}" width="100" height="100"
+                         alt=""/>
                     <h3 class="mt-5 ms-3 text-break">{{ u.username }}</h3>
                     <p class="text-end" style="position:absolute;bottom:5px;right:5px;margin:0;padding:5px 3px;" >  {{ u.profile.friends.count }} Friends</p>
                 </div>
@@ -81,7 +82,8 @@
       </li>
     </ul>
     <div class="tab-content mx-4 pt-2" id="pills-tabContent">
-        <div class="tab-pane fade show active" style="outline: none" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab" tabindex="0">
+        <div class="tab-pane fade show active" style="outline: none" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab"
+             tabindex="0">
               <div class="col-md-5 me-4">
                 {% for post in posts%}
                     <div class="card card-signin my-3" style="width: 500px">
@@ -89,29 +91,38 @@
                       {% if post.shared_username %}
                           <div class="position-relative border-bottom mb-3">
                               {% if not request.user == post.shared_username%}
-                                <a href="{{ post.shared_username.profile.get_absolute_url }}"><img src="{{ post.shared_username.profile.profile_pic.url }}" class="rounded-circle" width="30" height="30" alt=""></a>
+                                <a href="{{ post.shared_username.profile.get_absolute_url }}"><img src="{{ post.shared_username.profile.profile_pic.url }}"
+                                                                                                   class="rounded-circle"
+                                                                                                   width="30"
+                                                                                                   height="30" alt=""></a>
                                 <a class="text-dark" href="{{ post.shared_username.profile.get_absolute_url }}"><b>{{ post.shared_username }}</b></a>
                               {% else %}
-                                <a href="{% url 'home' %}"><img src="{{ post.shared_username.profile.profile_pic.url }}" class="rounded-circle" width="30" height="30" alt=""></a>
+                                <a href="{% url 'home' %}"><img src="{{ post.shared_username.profile.profile_pic.url }}"
+                                                                class="rounded-circle" width="30" height="30" alt=""></a>
                                 <a class="text-dark" href="{% url 'home' %}"><b>{{ post.shared_username }}</b></a>
                               {% endif %}
                               <br><small class="text-muted">Shared on {{post.shared_date}}</small>
                               {% if post.shared_description != none %}
                               <br>
-                              <a class="post-link text-dark text-break text-decoration-none" href="{% url 'post-detail' post.pk%}">{{ post.shared_description }}</a>
+                              <a class="post-link text-dark text-break text-decoration-none" href="{% url 'post-detail' post.pk%}">
+                                  {{ post.shared_description }}</a>
                               {% endif %}
                           </div>
-                          <div class="shared-post">
+                          <div class="shared-post mx-4">
                             {% if not request.user == post.username%}
-                            <a href="{{ post.username.profile.get_absolute_url }}"><img src="{{ post.username.profile.profile_pic.url }}" class="rounded-circle" width="30" height="30" alt=""></a>
+                            <a href="{{ post.username.profile.get_absolute_url }}"><img src="{{ post.username.profile.profile_pic.url }}"
+                                                                                        class="rounded-circle" width="30"
+                                                                                        height="30" alt=""></a>
                             <a class="text-dark" href="{{ post.username.profile.get_absolute_url }}"><b>{{ post.username }}</b></a>
                             {% else %}
-                            <a href="{% url 'home' %}"><img src="{{ post.username.profile.profile_pic.url }}" class="rounded-circle" width="30" height="30" alt=""></a>
+                            <a href="{% url 'home' %}"><img src="{{ post.username.profile.profile_pic.url }}"
+                                                            class="rounded-circle" width="30" height="30" alt=""></a>
                             <a class="text-dark" href="{% url 'home' %}"><b>{{ post.username }}</b></a>
                             {% endif %}
                             <br><small class="text-muted">Posted on {{ post.date_posted }}</small>
                             <br>
-                            <a class="post-link text-dark text-break text-decoration-none" href="{% url 'post-detail' post.pk %}">{{ post.description }}</a>
+                            <a class="post-link text-dark text-break text-decoration-none" href="{% url 'post-detail' post.pk %}">
+                                {{ post.description }}</a>
                             {% if post.pic %}
                                 <img class="mx-auto d-block" src="{{ post.pic.url }}" alt=" " style="max-block-size: 300px">
                             {% endif %}
@@ -128,7 +139,8 @@
                             </a>
                             {% endif %}
                             <!-- Modal -->
-                            <div class="modal fade" id="deletepost" tabindex="-1" aria-labelledby="deletepostModalTitle" aria-hidden="true">
+                            <div class="modal fade" id="deletepost" tabindex="-1" aria-labelledby="deletepostModalTitle"
+                                 aria-hidden="true">
                               <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content" style="width: 500px">
                                   <div class="modal-header">
@@ -140,21 +152,26 @@
                                     </div>
                                      <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                        <a type="button" class="btn btn-danger" href="{% url 'post-delete' post.pk %}">Confirm Deletion</a>
+                                        <a type="button" class="btn btn-danger" href="{% url 'post-delete' post.pk %}">
+                                            Confirm Deletion</a>
                                      </div>
                                 </div>
                               </div>
                             </div>
                             {% if not request.user == post.username%}
-                            <a href="{{ post.username.profile.get_absolute_url }}"><img src="{{ post.username.profile.profile_pic.url }}" class="rounded-circle" width="30" height="30" alt=""></a>
+                            <a href="{{ post.username.profile.get_absolute_url }}"><img src="{{ post.username.profile.profile_pic.url }}"
+                                                                                        class="rounded-circle" width="30"
+                                                                                        height="30" alt=""></a>
                             <a class="text-dark" href="{{ post.username.profile.get_absolute_url }}"><b>{{ post.username }}</b></a>
                             {% else %}
-                            <a href="{% url 'home' %}"><img src="{{ post.username.profile.profile_pic.url }}" class="rounded-circle" width="30" height="30" alt=""></a>
+                            <a href="{% url 'home' %}"><img src="{{ post.username.profile.profile_pic.url }}"
+                                                            class="rounded-circle" width="30" height="30" alt=""></a>
                             <a class="text-dark" href="{% url 'home' %}"><b>{{ post.username }}</b></a>
                             {% endif %}
                         <br><small class="text-muted">Posted on {{ post.date_posted }}</small>
                         <br>
-                          <a class="post-link text-dark text-break text-decoration-none" href="{% url 'post-detail' post.pk %}">{{ post.description }}</a>
+                          <a class="post-link text-dark text-break text-decoration-none" href="{% url 'post-detail' post.pk %}">
+                              {{ post.description }}</a>
                         <br>
                           {% if post.pic %}
                               <img class="mx-auto d-block" src="{{ post.pic.url }}" alt=" " style="max-block-size: 300px">
@@ -166,7 +183,8 @@
                               {{ share_form | crispy }}
                           </fieldset>
                             <div class="form-group float-end">
-                                        <button class="btn btn-sm btn-primary btn-block text-uppercase" type="submit">Share!</button><br>
+                                        <button class="btn btn-sm btn-primary btn-block text-uppercase"
+                                                type="submit">Share!</button><br>
                             </div>
                       </form>
                       </div>
@@ -174,10 +192,12 @@
                       {% if not request.user == post.username and not request.user == post.shared_username%}
                          <button class="btn like float-sm-start" id="{{ post.id }}">
                              {% if post in is_liked %}
-                                 <a type="button" class="btn btn-danger btn-sm" href="{% url 'post-like' %}" id="likebtn{{ post.id }}">
+                                 <a type="button" class="btn btn-danger btn-sm" href="{% url 'post-like' %}"
+                                    id="likebtn{{ post.id }}">
                                      <i class="fa-solid fa-heart-crack"></i></a>
                              {% else %}
-                                 <a type="button" class="btn btn-primary btn-sm" href="{% url 'post-like' %}" id="likebtn{{ post.id }}">
+                                 <a type="button" class="btn btn-primary btn-sm" href="{% url 'post-like' %}"
+                                    id="likebtn{{ post.id }}">
                                      <i class="fa-solid fa-heart"></i></a>
                              {% endif %}
                          </button>
@@ -210,7 +230,8 @@
                 {% endif %}
                 </div>
         </div>
-        <div class="tab-pane fade" id="pills-profile" style="outline: none" role="tabpanel" aria-labelledby="pills-profile-tab" tabindex="0">
+        <div class="tab-pane fade" id="pills-profile" style="outline: none" role="tabpanel" aria-labelledby="pills-profile-tab"
+             tabindex="0">
               <div class="list-group mt-2" style="max-width: 400px">
                 {% if u.profile.name %}
                     <p class="list-group-item"> Name: {{ u.profile.name }}</p>
@@ -229,7 +250,8 @@
                 {% endif %}
             </div>
         </div>
-      <div class="tab-pane fade" id="pills-contact" style="outline: none" role="tabpanel" aria-labelledby="pills-contact-tab" tabindex="0">
+      <div class="tab-pane fade" id="pills-contact" style="outline: none" role="tabpanel" aria-labelledby="pills-contact-tab"
+           tabindex="0">
       <div class="mt-2" style="max-inline-size: fit-content">
         <div class="shadow-sm" style="background-color: white">
         {% if friends_list %}
@@ -267,7 +289,8 @@
           {% endif %}
         </div>
     </div>
-    <div class="tab-pane fade" id="pills-photos" style="outline: none" role="tabpanel" aria-labelledby="pills-photos-tab" tabindex="0">:)</div>
+    <div class="tab-pane fade" id="pills-photos" style="outline: none" role="tabpanel" aria-labelledby="pills-photos-tab"
+         tabindex="0"></div>
 </div>
 </div>
     {% endif %}

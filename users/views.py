@@ -153,7 +153,8 @@ class ActiveProfileView(LoginRequiredMixin, ListView):
             if f in post_filter:
                 friend = friend.filter(user=f.user)
         post_filter += friend
-        paginator = Paginator(Post.objects.filter(username__profile__in=post_filter).annotate(lr=Coalesce(Max('shared_date'), 'date_posted'))
+        paginator = Paginator(Post.objects.filter(username__profile__in=post_filter)
+                              .annotate(lr=Coalesce(Max('shared_date'), 'date_posted'))
                               .order_by('-lr'), 10)
         page = request.GET.get('page')
         posts = paginator.get_page(page)

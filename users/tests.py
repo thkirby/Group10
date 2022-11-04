@@ -1,5 +1,6 @@
-from django.test import TestCase
+from django.test import TestCase, Client
 from django.contrib.auth.models import User
+from django.urls import reverse
 from django.test import TransactionTestCase
 from django.contrib.auth import authenticate
 from feed.models import Post, Comment, Like
@@ -32,7 +33,7 @@ class SigninTest(TransactionTestCase):
 
 
 # test cases for post creation
-class TestPost(TestCase):
+class TestPosts(TestCase):
     def setUp(self):
         user = User(username='test')
         user.save()
@@ -65,13 +66,60 @@ class TestPost(TestCase):
         self.assertEquals(description, post.description)
 
 
+class TestCommentLikesSharing(TestCase):
+    def setUp(self):
+        self.user = User(username='test', email='test@test.com')
+        self.user2 = User(username='test2', email='test2@fake.com')
+        self.user.save()
+        self.user2.save()
+
+        self.post = Post.objects.create(
+            username=self.user,
+            shared_username=self.user2,
+            shared_description='shared post',
+            description='test post',
+            pic=None,
+            date_posted=timezone.now())
+        self.post.save()
+
+        self.comment = Comment.objects.create(
+            post_id=self.post.pk,
+            username=self.user2,
+            comment='test comment',
+            comment_date=timezone.now())
+        self.comment.save()
+
+        self.like = Like.objects.create(
+            post_id=self.post.pk,
+            user_id=self.user2.pk
+        )
+        self.like.save()
+
+    # test that comment was created on the correct post
+    def test_comment_on_post(self):
+        comment = self.comment.post_id
+        self.assertEquals(self.post.pk, comment)
+
+    # test that comment contents is created and stored
+    def test_comment_content(self):
+        comment = Comment.objects.get(pk=1)
+        content = comment.comment
+        self.assertEquals(self.comment.comment, content)
+
+    # test that the correct post was liked
+    def test_liked_post(self):
+        like = self.like.post_id
+        self.assertEqual(self.post.pk, like)
+
+
 # test cases for friend requests
 class TestFriendRequest(TestCase):
     def setUp(self):
-        self.user = User(username='test')
+        self.user = User(username='test', email='test@test.com')
         self.user.save()
-        self.user2 = User(username='test2')
+        self.user2 = User(username='test2', email='test2@fake.com')
         self.user2.save()
+        self.send_request_url = reverse('send_friend_request', args=[self.user.pk])
 
     def tearDown(self):
         self.user.delete()
@@ -94,7 +142,10 @@ class TestFriendRequest(TestCase):
         self.assertFalse(sent is "From test, to test2")
 
     # test if friend request is accepted
-    def test_accept_fr(self):
-        accept_friend_request(self.request, self.request.id)
-        self.assertEquals(self.user.profile.friends.count(), 1)
-        self.assertEquals(self.user2.profile.friends.count(), 1)
+    def test_freinds_send_request_post(self):
+        self.client = Client(HTTP_REFERER='/users/')
+        self.client.force_login(self.user)
+        data = {'from_user': self.user, 'to_user': self.user2}
+        response = self.client.post(self.send_request_url, data)
+
+        self.assertEqual(response.status_code, 302)

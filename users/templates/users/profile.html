@@ -37,7 +37,8 @@
                             {% endif %}
                         </button>
                         <!-- Modal -->
-                        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                             aria-hidden="true">
                           <div class="modal-dialog">
                             <div class="modal-content">
                               <div class="modal-header">
@@ -151,7 +152,8 @@
                                         {{ post_form | crispy }}
                                     </fieldset>
                                     <div class="form-group text-center">
-                                        <button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Post</button><br>
+                                        <button class="btn btn-lg btn-primary btn-block text-uppercase"
+                                                type="submit">Post</button><br>
                                     </div>
                                 </form>
                             </div>
@@ -167,10 +169,13 @@
                       {% if post.shared_username %}
                           <div class="position-relative border-bottom mb-3">
                               {% if not request.user == post.shared_username%}
-                                <a href="{{ post.shared_username.profile.get_absolute_url }}"><img src="{{ post.shared_username.profile.profile_pic.url }}"
-                                                                                                   class="rounded-circle" width="30"
-                                                                                                   height="30" alt=""></a>
-                                <a class="text-dark" href="{{ post.shared_username.profile.get_absolute_url }}"><b>{{ post.shared_username }}</b></a>
+                                <a href="{{ post.shared_username.profile.get_absolute_url }}">
+                                    <img src="{{ post.shared_username.profile.profile_pic.url }}"
+                                         class="rounded-circle"
+                                         width="30"
+                                         height="30" alt=""></a>
+                                <a class="text-dark" href="{{ post.shared_username.profile.get_absolute_url }}"><b>
+                                    {{ post.shared_username }}</b></a>
                               {% else %}
                                 <a href="{% url 'home' %}"><img src="{{ post.shared_username.profile.profile_pic.url }}"
                                                                 class="rounded-circle" width="30" height="30" alt=""></a>
@@ -183,7 +188,7 @@
                                   {{ post.shared_description }}</a>
                               {% endif %}
                           </div>
-                          <div class="shared-post">
+                          <div class="shared-post mx-4">
                             {% if not request.user == post.username%}
                             <a href="{{ post.username.profile.get_absolute_url }}"><img src="{{ post.username.profile.profile_pic.url }}"
                                                                                         class="rounded-circle" width="30"
@@ -214,7 +219,8 @@
                             </a>
                             {% endif %}
                             <!-- Modal -->
-                            <div class="modal fade" id="deletepost" tabindex="-1" aria-labelledby="deletepostModalTitle" aria-hidden="true">
+                            <div class="modal fade" id="deletepost" tabindex="-1" aria-labelledby="deletepostModalTitle"
+                                 aria-hidden="true">
                               <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content" style="width: 500px">
                                   <div class="modal-header">
@@ -361,7 +367,7 @@
         </div>
     </div>
     <div class="tab-pane fade" id="pills-photos" style="outline: none" role="tabpanel" aria-labelledby="pills-photos-tab"
-         tabindex="0">:)</div>
+         tabindex="0"></div>
 </div>
 </div>
     </div>
