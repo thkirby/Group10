@@ -141,7 +141,7 @@ class TestFriendRequest(TestCase):
         sent = request.__str__()
         self.assertFalse(sent is "From test, to test2")
 
-    # test if friend request is accepted
+    # test if friend request is sent
     def test_freinds_send_request_post(self):
         self.client = Client(HTTP_REFERER='/users/')
         self.client.force_login(self.user)

@@ -2,9 +2,9 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from .models import Profile
-from feed.models import Post
 
 
+# form for registering a new user
 class UserRegistrationForm(UserCreationForm):
     email = forms.EmailField()
 
@@ -13,6 +13,7 @@ class UserRegistrationForm(UserCreationForm):
         fields = ['username', 'email', 'password1', 'password2']
 
 
+# form for changing username and email
 class UserUpdateForm(forms.ModelForm):
     email = forms.EmailField()
 
@@ -21,6 +22,7 @@ class UserUpdateForm(forms.ModelForm):
         fields = ['username', 'email']
 
 
+# form for editing user profile details
 class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = Profile

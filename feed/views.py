@@ -17,6 +17,7 @@ class Index(View):
         return render(request, 'feed/landing.html')
 
 
+# user page for creating a new post
 class CreatePost(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         user = request.user
@@ -33,6 +34,7 @@ class CreatePost(LoginRequiredMixin, View):
         return render(request, 'feed/create_post.html', {'post_form': form})
 
 
+# page to view a specific post
 class PostDetailView(LoginRequiredMixin, View):
     def get(self, request, pk, *args, **kwargs):
         post = Post.objects.get(pk=pk)
@@ -49,6 +51,7 @@ class PostDetailView(LoginRequiredMixin, View):
         }
         return render(request, 'feed/post_detail.html', context)
 
+    # form for creating a comment on a post
     def post(self, request, pk, *args, **kwargs):
         post = Post.objects.get(pk=pk)
         form = NewCommentForm(request.POST)
@@ -63,6 +66,7 @@ class PostDetailView(LoginRequiredMixin, View):
         return redirect('post-detail', pk=pk)
 
 
+# function for deleting a post
 @login_required()
 def post_delete(request, pk):
     post = Post.objects.get(pk=pk)
@@ -71,6 +75,7 @@ def post_delete(request, pk):
     return redirect('home')
 
 
+# function for deleting a comment
 @login_required()
 def comment_delete(request, pk):
     comment = Comment.objects.get(pk=pk)
@@ -79,6 +84,7 @@ def comment_delete(request, pk):
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
+# page for editing a user post
 class PostEditView(LoginRequiredMixin, UpdateView):
     model = Post
     fields = ['description', 'pic']
@@ -89,6 +95,7 @@ class PostEditView(LoginRequiredMixin, UpdateView):
         return reverse_lazy('post-detail', kwargs={'pk': pk})
 
 
+# function for allowing a user to like a post and remove that like
 @login_required
 def like(request):
     post_id = request.GET.get("likeId", "")
@@ -108,11 +115,12 @@ def like(request):
     return HttpResponse(response, content_type="application/json")
 
 
+# User can share an already existing post made by another user
 class SharePostView(View):
     def post(self, request, pk, *args, **kwargs):
         original_post = Post.objects.get(pk=pk)
         share_form = SharePostForm(request.POST)
-
+        # form for sharing a post
         if share_form.is_valid():
             share_post = Post(shared_description=self.request.POST.get('description'),
                               description=original_post.description,
@@ -125,4 +133,3 @@ class SharePostView(View):
         else:
             share_form = SharePostForm()
         return redirect('home')
-

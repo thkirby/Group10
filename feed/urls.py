@@ -3,7 +3,7 @@ from django.urls import path
 from .views import Index, CreatePost, PostDetailView, SharePostView, PostEditView
 from . import views
 
-
+# url patterns to handle redirection and linking between pages
 urlpatterns = [
     path('', Index.as_view(), name='home'),
     path('post/new/', CreatePost.as_view(), name='create-post'),
