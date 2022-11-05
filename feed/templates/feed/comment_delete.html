@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 {% extends 'feed/base.html' %}
 {% block content %}
+    <!-- if logged-in the user can comment -->
     {% if request.user == comment.username %}
     <a type="button" class="float-sm-start" data-bs-toggle="modal" data-bs-target="#deletecomment"
                         style="color: crimson"><i class="fa-solid fa-trash"></i>
     </a>
     {% endif %}
-    <!-- Modal -->
+    <!-- Modal for comment deletion form -->
     <div class="modal fade" id="deletecomment" tabindex="-1" aria-labelledby="deletecommentModalTitle" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="width: 500px">

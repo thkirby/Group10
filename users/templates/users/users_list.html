@@ -4,6 +4,7 @@
 <div class="container">
   <div class="row">
     <div class="col-md-3">
+        <!-- card to show current user information on search page -->
       <div class="card card-signin my-5">
         <a href="{% url 'profile' %}">
             <img class="rounded-circle d-block mx-auto mt-1" src="{{ request.user.profile.profile_pic.url }}"  alt=""  width="100" height="100"/>
@@ -20,6 +21,7 @@
       </div>
     </div>
     <div class="col-md-8">
+    <!-- display non-friended user list -->
       {% if users %}
       <div class="card card-signin my-5">
         <div class="card-body">
@@ -48,6 +50,7 @@
         </div>
       </div>
       {% else %}
+          <!-- if no other uses that are not already a friend can be found -->
       <h5><i>No new people to find for now! Please come back later!</i></h5>
       {% endif %}
     </div>

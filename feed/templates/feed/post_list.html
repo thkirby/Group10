@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 {% extends 'feed/base.html' %}
 {% block content %}
+    <!-- displays post list -->
     {% for post in posts%}
                     <div class="card card-signin my-3">
                       <div class="card-body">
@@ -18,10 +19,6 @@
                             <img class="mx-auto d-block" src="{{ post.pic.url }}" alt=" " style="max-block-size: 300px">
                         {% endif %}
                       </div>
-                      {% if post.tags %}
-                      <br>
-                      <p class="fs-6 text-dark ml-3 ms-2"><b>Tags: <i>{{ post.tags }}</i></b></p>
-                      {% endif %}
                       <div class="card-footer">
                         <button class="btn btn-primary mr-3 like" id="{{ post.id }}">
                             Like
@@ -29,7 +26,7 @@
                       </div>
                     </div>
                 {% endfor %}
-
+                <!-- paginates post list -->
                 {% if posts.has_previous %}
                     <a class="btn btn-outline-primary mb-4" href="?page=1">First</a>
                     <a class="btn btn-outline-primary mb-4" href="?page={{ posts.previous_page_number }}">Previous</a>

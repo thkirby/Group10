@@ -11,6 +11,7 @@
 <div class="container">
     <div class="row mt-3 mx-3">
         <div class="card shadow-sm col-md-4 col-sm-6 px-3 pt-3 pb-3" style="height: 195px">
+        <!-- profile card for a user -->
             <div class="media">
                 <div class="d-flex">
                     <img class="rounded-circle account-img" src="{{ u.profile.profile_pic.url }}" width="100" height="100"/>
@@ -36,7 +37,7 @@
                                 </span>
                             {% endif %}
                         </button>
-                        <!-- Modal -->
+                        <!-- Modal for friend requests and sent -->
                         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
                              aria-hidden="true">
                           <div class="modal-dialog">
@@ -45,8 +46,8 @@
                                 <h1 class="modal-title fs-5" id="exampleModalLabel">Friend Requests</h1>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                               </div>
+                                <!-- friend requests recieved and sent display -->
                               <div class="modal-body">
-
                                     <label>Pending Sent Friend Requests ({{ sent_friend_requests.count }})</label>
                                     <hr class="my-2" />
                                     {% if not sent_friend_requests %}
@@ -111,6 +112,7 @@
                 {% endif %}
 
     <div class="col-md-4 col-sm-6 px-3 pt-3 pb-3">
+    <!-- profile tabs for timeline, bio, friends, photos -->
     <ul class="nav justify-content-center nav-pills" id="pills-tab" role="tablist">
       <li class="nav-item" role="presentation">
             <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home"
@@ -135,7 +137,7 @@
             <button type="button" class="btn text-primary fw-bolder" data-bs-toggle="modal" data-bs-target="#post"
                         style="max-width: fit-content">Create a post
             </button>
-            <!-- Modal -->
+            <!-- Modal for post creation form -->
             <div class="modal fade" id="post" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
               <div class="modal-dialog">
                 <div class="modal-content" style="width: 800px">
@@ -163,6 +165,7 @@
                   </div>
                 </div>
               <div class="col-md-5 me-4">
+              <!--post list display-->
                 {% for post in posts%}
                     <div class="card card-signin my-3" style="width: 500px">
                       <div class="card-body">
@@ -188,6 +191,7 @@
                                   {{ post.shared_description }}</a>
                               {% endif %}
                           </div>
+                          <!--shared post display-->
                           <div class="shared-post mx-4">
                             {% if not request.user == post.username%}
                             <a href="{{ post.username.profile.get_absolute_url }}"><img src="{{ post.username.profile.profile_pic.url }}"
@@ -208,6 +212,7 @@
                             {% endif %}
                           </div>
                       {% else %}
+                          <!-- delete post button -->
                           {% if request.user == post.username %}
                             <a type="button" class="float-end" data-bs-toggle="modal" data-bs-target="#deletepost"
                                                 style="color: crimson"><i class="fa-solid fa-trash"></i>
@@ -218,7 +223,7 @@
                                                 style="color: crimson"><i class="fa-solid fa-trash"></i>
                             </a>
                             {% endif %}
-                            <!-- Modal -->
+                            <!-- Modal for deleting post confirmation -->
                             <div class="modal fade" id="deletepost" tabindex="-1" aria-labelledby="deletepostModalTitle"
                                  aria-hidden="true">
                               <div class="modal-dialog modal-dialog-centered">
@@ -256,6 +261,7 @@
                               <img class="mx-auto d-block" src="{{ post.pic.url }}" alt=" " style="max-block-size: 300px">
                           {% endif %}
                       {% endif %}
+                      <!-- sharing post form -->
                         <form class="d-share" method="POST" action="{% url 'share-post' post.pk%}" id="{{ post.pk }}">
                           {% csrf_token %}
                           <fieldset class=form-group">
@@ -269,6 +275,7 @@
                       </div>
                       <div class="card-footer">
                       {% if not request.user == post.username and not request.user == post.shared_username%}
+                            <!-- button for liking a post -->
                          <button class="btn like float-sm-start" id="{{ post.id }}">
                              {% if post in is_liked %}
                                  <a type="icon" class="btn btn-danger btn-sm" href="{% url 'post-like' %}"
@@ -278,20 +285,22 @@
                                     id="likebtn{{ post.id }}"><i class="fa-solid fa-heart"></i></a>
                              {% endif %}
                          </button>
+                            <!-- button for sharing a post -->
                           <button class="btn btn-success btn-sm mt-2" onclick="ShareButton({{post.pk}})">Share Post</button>
                       {% endif %}
+                        <!-- button for viewing comments/expanding specific post -->
                       <a class="btn btn-sm btn-primary mt-2 float-end" href="{% url 'post-detail' post.pk %}">View Comments</a>
                       </div>
                     </div>
                 {% endfor %}
               </div>
                 <div class="container" style="width: max-content">
+               <!-- pagination of post list display -->
                 {% if posts.paginator.num_pages > 1  %}
                     {% if posts.has_previous %}
                         <a class="btn btn-outline-primary mb-4" href="?page=1">First</a>
                         <a class="btn btn-outline-primary mb-4" href="?page={{ posts.previous_page_number }}">Previous</a>
                     {% endif %}
-
                     {% for num in posts.paginator.page_range %}
                         {% if posts.number == num %}
                           <a class="btn btn-primary mb-4" href="?page={{ num }}">{{ num }}</a>
@@ -307,6 +316,7 @@
                 {% endif %}
                 </div>
         </div>
+        <!-- user bio display -->
         <div class="tab-pane fade" id="pills-profile" style="outline: none" role="tabpanel" aria-labelledby="pills-profile-tab"
              tabindex="0">
               <div class="list-group mt-2" style="max-width: 400px">
@@ -327,6 +337,7 @@
                 {% endif %}
             </div>
         </div>
+        <!-- friends list display -->
       <div class="tab-pane fade" id="pills-contact" style="outline: none" role="tabpanel" aria-labelledby="pills-contact-tab"
            tabindex="0">
       <div class="mt-2" style="max-inline-size: fit-content">
@@ -366,6 +377,7 @@
           {% endif %}
         </div>
     </div>
+    <!-- display for photos -->
     <div class="tab-pane fade" id="pills-photos" style="outline: none" role="tabpanel" aria-labelledby="pills-photos-tab"
          tabindex="0"></div>
 </div>
@@ -375,6 +387,7 @@
 {% endblock content %}
 
 {% block jsfiles %}
+    <!-- script for the like button -->
 <script>
 	$(".like").click(function (e) {
     var id = this.id;
@@ -403,5 +416,6 @@
       })
 });
 </script>
+    <!-- script for the share button -->
 <script type="text/javascript" src={% static 'js/feed.js' %}></script>
 {% endblock jsfiles %}

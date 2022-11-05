@@ -4,12 +4,14 @@
     {% include 'feed/navbar.html' %}
     <div class="container">
         <div class="row justify-content-center mt-2">
+        <!-- sends user back to profile -->
             <div class="p-3">
             <a type="button" class="btn text-primary fw-bolder" href="javascript:history.back()"
                         style="max-width: fit-content">Back to Profile
             </a>
             </div>
             <div class="col-md-5 col-sm-6">
+            <!-- card to display post -->
             <div class="card card-signin my-3">
                   <div class="card-body position-relative">
                     <a href="{{ post.username.profile.get_absolute_url }}"><img src="{{ post.username.profile.profile_pic.url }}" class="rounded-circle" width="30" height="30" alt=""></a>
@@ -18,6 +20,7 @@
                     <br><br>
                     <p class="card-text text-dark">{{ post.description }}</p>
                     {% if request.user == post.username %}
+                        <!-- edit post button -->
                         <a class="float-sm-end text-decoration-none" style="position:absolute;bottom:5px;right:5px;margin:0;padding:5px 3px;" href="{% url 'post-edit' post.pk %}">
                         <i class="fa-regular fa-pen-to-square"></i>
                         <div class="d-inline-flex text-sm-start">Edit
@@ -29,6 +32,7 @@
                     {% endif %}
                   </div>
                   <div class="card-footer">
+                  <!-- buttons for liking a post -->
                     <button class="btn mr-3 like" id="{{ post.id }}">
 			        {% if is_liked %}
 			            <a type="button" class="btn btn-danger btn-sm shadow-none" href="{% url 'post-like' %}" id="likebtn{{ post.id }}">
@@ -40,6 +44,7 @@
 			        </button>
                       <div class="row" style="width: 800px">
                               <div class="col-sm-9 col-md-7 col-lg-5 me-5">
+                                  <!-- form for comment creation -->
                                     <form class="form-signin" method = "POST" enctype="multipart/form-data">
                                     {% csrf_token %}
                                     <fieldset class="form-group"><br>
@@ -52,11 +57,12 @@
                             </div>
                         </div>
                        {% if request.user == post.username %}
+                           <!-- button to delete post -->
                         <a type="button" class="float-end" data-bs-toggle="modal" data-bs-target="#deletepost"
                                             style="color: crimson"><i class="fa-solid fa-trash"></i>
                         </a>
                         {% endif %}
-                        <!-- Modal -->
+                        <!-- Modal for confirmation of deletion of post -->
                         <div class="modal fade" id="deletepost" tabindex="-1" aria-labelledby="deletepostModalTitle" aria-hidden="true">
                           <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content" style="width: 500px">
@@ -76,8 +82,7 @@
                         </div>
                   </div>
                 </div>
-
-
+            <!-- comment section display of user comments -->
         {% for comment in comments %}
         <div class="row mx-auto mb-4 border-bottom">
             {% if not request.user == comment.username%}
