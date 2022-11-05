@@ -1,5 +1,6 @@
 {% extends 'feed/base.html' %} {% load crispy_forms_tags %}
 {% block content %}
+    <!-- landing page for new or not logged-in users -->
 <div class="container">
     <div class="row justify-content-center mt-5">
         <div class="col-md-auto text-center mt-5">
@@ -12,6 +13,7 @@
             <div class="card card-signin my-3">
                 <div class="card-body">
                     <div class="d-grid justify-content-center">
+                        <!-- log in form -->
                         <form class="form-signin" method="POST">
                             {% csrf_token %}
                             <fieldset class="form-group text-wrap" style="width: 16rem">

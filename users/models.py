@@ -6,6 +6,7 @@ from django.conf import settings
 from autoslug import AutoSlugField
 
 
+# model and fields for Profile to be stored in database
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     profile_pic = models.ImageField(default='uploads/default.png', upload_to='profile_pics')
@@ -24,6 +25,7 @@ class Profile(models.Model):
         return "/users/{}".format(self.slug)
 
 
+# create a user instance for Profile
 @receiver(post_save, sender=User)
 def post_save_user_model_receiver(sender, instance, created, *args, **kwargs):
     if created:
@@ -36,6 +38,7 @@ def post_save_user_model_receiver(sender, instance, created, *args, **kwargs):
 post_save.connect(post_save_user_model_receiver, sender=settings.AUTH_USER_MODEL)
 
 
+# Friend Request model and relevant fields to be stored in database
 class FriendRequest(models.Model):
     to_user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='to_user', on_delete=models.CASCADE)
     from_user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='from_user', on_delete=models.CASCADE)

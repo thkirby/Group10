@@ -1,9 +1,11 @@
 {% block content %}
+    <!-- site navbar (will be included in other pages in most cases) -->
     <nav class="sticky-top navbar navbar-expand-xxl" style="background: royalblue">
         <h1 class="navbar-brand px-2 mb-auto fw-bolder text-white">Fakebook</h1>
         <div class="container">
             <div class="collapse navbar-collapse ms-4" id="navbarSupportedContent">
               <ul class="navbar-nav me-auto">
+              <!-- anonymous user sent to landing page, logged-in user sent to profile -->
                   <li class="nav-item">
                       {% if not user.is_authenticated %}
                           <a class="navbar-brand text-white" href="{% url 'home' %}">Home</a>
@@ -11,9 +13,11 @@
                           <a class="navbar-brand text-white" href="{% url 'profile' %}">Home</a>
                       {% endif %}
                   </li>
+              <!-- button links to user list -->
                   <li class="nav-item">
                     <a class="navbar-brand text-white" href={% url 'users_list' %}>People</a>
                   </li>
+                   <!-- drop down for more button links -->
                   <li class="nav-item dropdown">
                       <a class="navbar-brand dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Dropdown
@@ -25,10 +29,8 @@
                         <li><a class="dropdown-item" href="#">Something else here</a></li>
                       </ul>
                   </li>
-                  <li class="nav-item">
-                    <a class="navbar-brand disabled" style="color: grey" aria-disabled="true">Disabled</a>
-                  </li>
               </ul>
+            <!-- search user form and field -->
               <form class="d-flex" role="search" action="{% url 'search_users' %}" method="get">
                 <input class="form-control me-2" name="q" type="search" placeholder="Search" aria-label="Search" >
                 <button class="btn btn-success" type="submit">Search</button>
@@ -42,5 +44,5 @@
             <a class="btn btn-outline-light text-light" style="width: 80px" href="{% url 'logout' %}">Login</a>
         {% endif %}
     </div>
-    </nav>
+</nav>
 {% endblock content %}

@@ -7,6 +7,7 @@
       <div class="card card-signin my-5">
         <div class="card-body">
           <h5 class="card-title text-center text-primary fw-bolder" style=""><b>Create A New Account</b></h5>
+            <!-- Registration form display -->
           <form class="form-signup" method="POST">
             {% csrf_token %}
             <fieldset class="form-signup">
@@ -23,6 +24,7 @@
                 </div>
             </div>
             <small>
+                <!-- text redirect to landing page -->
                 <p class="text-center">
                     Already Registered?
                     <a href="{% url 'home' %}"><b>Log in</b></a>

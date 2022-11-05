@@ -6,19 +6,20 @@
       <div class="card card-signin my-5">
         <div class="card-body">
           <h5 class="card-title text-center text-primary fw-bolder" style=""><b>Update Profile</b></h5>
+             <!-- edit profile and user information forms -->
           <form class="form-signup" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <fieldset class="form-signup">
               <br />
                 {{ u_form|crispy }}
                 {{ p_form|crispy }}
-
             </fieldset>
                 <div class="vstack gap-2 col col- mx-auto">
                     <button
                         class="btn btn-success text-uppercase" style="max-inline-size: fit-content" type="submit"> Update
                     </button>
                     <small>
+                        <!-- redirect to profile -->
                         <p class="">
                             <a href="{% url 'home' %}"><b>Cancel</b></a>
                         </p>

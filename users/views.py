@@ -1,16 +1,24 @@
+from django.db.models import Max
+from django.db.models.functions import Coalesce
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.paginator import Paginator
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from .models import Profile, FriendRequest
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from .forms import UserRegistrationForm, UserUpdateForm, ProfileUpdateForm
-from django.http import JsonResponse
-from django.http import HttpResponseRedirect
+from feed.forms import NewPostForm, SharePostForm
+from feed.models import Post, Like
+from django.views.generic import ListView
 import random
 
+# grabbing django user model
 User = get_user_model()
 
 
+# list created for logged-in users to see other user profiles on the site
+# friends of user are excluded from this list
 @login_required
 def users_list(request):
     users = Profile.objects.exclude(user=request.user)
@@ -47,6 +55,7 @@ def users_list(request):
     return render(request, "users/users_list.html", context)
 
 
+# user's friends list
 def friend_list(request):
     p = request.user.profile
     friends = p.friends.all()
@@ -56,6 +65,7 @@ def friend_list(request):
     return render(request, "users/friend_list.html", context)
 
 
+# User sending a friend request to another user
 @login_required
 def send_friend_request(request, id):
     user = get_object_or_404(User, id=id)
@@ -65,6 +75,7 @@ def send_friend_request(request, id):
     return redirect(request.META['HTTP_REFERER'])
 
 
+# User canceling a friend request sent to another user
 @login_required
 def cancel_friend_request(request, id):
     user = get_object_or_404(User, id=id)
@@ -75,6 +86,7 @@ def cancel_friend_request(request, id):
     return redirect(request.META['HTTP_REFERER'])
 
 
+# User accepting a friend request sent to them
 @login_required
 def accept_friend_request(request, id):
     from_user = get_object_or_404(User, id=id)
@@ -90,6 +102,7 @@ def accept_friend_request(request, id):
     return redirect(request.META['HTTP_REFERER'])
 
 
+# User rejecting a friend request sent to them
 @login_required
 def delete_friend_request(request, id):
     from_user = get_object_or_404(User, id=id)
@@ -98,6 +111,7 @@ def delete_friend_request(request, id):
     return redirect(request.META['HTTP_REFERER'])
 
 
+# User removing a friend from their friend's list
 def delete_friend(request, id):
     user_profile = request.user.profile
     friend_profile = get_object_or_404(Profile, id=id)
@@ -106,6 +120,7 @@ def delete_friend(request, id):
     return redirect(request.META['HTTP_REFERER'])
 
 
+# User can query for other users
 @login_required
 def search_users(request):
     query = request.GET.get('q')
@@ -130,40 +145,71 @@ def register(request):
     return render(request, 'users/register.html', {'form': form})
 
 
-def profile(request):
-    if request.user.is_authenticated:
+# Profile of currently logged-in user
+class ActiveProfileView(LoginRequiredMixin, ListView):
+    # get details of logged-in user profile
+    def get(self, request, *args, **kwargs):
         active_profile = request.user.profile
         active_user = active_profile.user
         sent_friend_requests = FriendRequest.objects.filter(from_user=active_profile.user)
         rec_friend_requests = FriendRequest.objects.filter(to_user=active_profile.user)
-        friends = active_profile.friends.all()
-
+        friends_list = active_profile.friends.all()
+        form = NewPostForm()
+        share_form = SharePostForm()
+        liked = [i for i in Post.objects.all() if Like.objects.filter(user=active_profile.user, post=i)]
         button_status = 'none'
+        post_filter = [active_profile]
+        friend = active_profile.friends.all()
+
+        # filtering user timeline posts for posts made by friends of user
+        for f in friend:
+            if f in post_filter:
+                friend = friend.filter(user=f.user)
+        post_filter += friend
+        # pagination of posts on a page
+        paginator = Paginator(Post.objects.filter(username__profile__in=post_filter)
+                              .annotate(lr=Coalesce(Max('shared_date'), 'date_posted'))
+                              .order_by('-lr'), 10)
+        page = request.GET.get('page')
+        posts = paginator.get_page(page)
+
         if active_profile not in request.user.profile.friends.all():
             button_status = 'not_friend'
-
-            # if we have sent him a friend request
-            if len(FriendRequest.objects.filter(
-                    from_user=request.user).filter(to_user=active_profile.user)) == 1:
+            # if user profile sent a friend request
+            if len(FriendRequest.objects.filter(from_user=request.user).filter(to_user=active_profile.user)) == 1:
                 button_status = 'friend_request_sent'
-
-            if len(FriendRequest.objects.filter(
-                    from_user=active_profile.user).filter(to_user=request.user)) == 1:
+            # if user profile recieved a friend request
+            if len(FriendRequest.objects.filter(from_user=active_profile.user).filter(to_user=request.user)) == 1:
                 button_status = 'friend_request_received'
 
         context = {
             'u': active_user,
             'button_status': button_status,
-            'friends_list': friends,
+            'friends_list': friends_list,
             'sent_friend_requests': sent_friend_requests,
             'rec_friend_requests': rec_friend_requests,
+            'is_liked': liked,
+            'post_form': form,
+            'share_form': share_form,
+            'posts': posts,
         }
         return render(request, 'users/profile.html', context)
-    else:
-        messages.warning(request, f'Please log in to access your profile')
-        return redirect('login')
+
+    # form for making a new post
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        form = NewPostForm(request.POST, request.FILES)
+        if form.is_valid():
+            data = form.save(commit=False)
+            data.username = user
+            data.save()
+            return redirect('home')
+        else:
+            form = NewPostForm()
+        return redirect('home')
 
 
+# form for editing user profile
 def edit_profile(request):
     # method for editing/updating profile
     if request.user.is_authenticated:
@@ -189,23 +235,39 @@ def edit_profile(request):
         return redirect('login')
 
 
+# profile page for user's without logged-in user functionality
 def profile_view(request, slug):
     user_profile = Profile.objects.filter(slug=slug).first()
     user = user_profile.user
     sent_friend_requests = FriendRequest.objects.filter(from_user=user_profile.user)
     rec_friend_requests = FriendRequest.objects.filter(to_user=user_profile.user)
     friends = user_profile.friends.all()
+    liked = [i for i in Post.objects.all() if Like.objects.filter(user=request.user, post=i)]
     button_status = 'none'
+    post_filter = [user_profile]
+    friend = user_profile.friends.all()
+
+    # filtering user timeline posts for posts made by friends of user
+    for f in friend:
+        if f in post_filter:
+            friend = friend.filter(user=f.user)
+    post_filter += friend
+    # pagination of posts on a page
+    paginator = Paginator(
+        Post.objects.filter(username__profile__in=post_filter).annotate(lr=Coalesce(Max('shared_date'), 'date_posted'))
+        .order_by('-lr'), 10)
+    page = request.GET.get('page')
+    posts = paginator.get_page(page)
 
     if request.user.is_authenticated:
         if user_profile not in request.user.profile.friends.all():
             button_status = 'not_friend'
 
-            # if active user has sent friend request to viewed profile
+            # if current user has sent friend request to viewed profile
             if len(FriendRequest.objects.filter(
                     from_user=request.user).filter(to_user=user_profile.user)) == 1:
                 button_status = 'friend_request_sent'
-
+            # if current user has recieved a friend request to viewed profile
             if len(FriendRequest.objects.filter(
                     from_user=user_profile.user).filter(to_user=request.user)) == 1:
                 button_status = 'friend_request_received'
@@ -215,12 +277,13 @@ def profile_view(request, slug):
             'friends_list': friends,
             'sent_friend_requests': sent_friend_requests,
             'rec_friend_requests': rec_friend_requests,
+            'is_liked': liked,
+            'posts': posts,
         }
-        return render(request, "users/profile.html", context)
+        return render(request, "users/profile_view.html", context)
 
     context = {
         'u': user,
-        'friends_list': friends,
     }
 
     return render(request, "users/profile_view.html", context)

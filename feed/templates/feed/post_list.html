@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+{% extends 'feed/base.html' %}
+{% block content %}
+    <!-- displays post list -->
+    {% for post in posts%}
+                    <div class="card card-signin my-3">
+                      <div class="card-body">
+                        <a class="stretched-link" href="{% url 'post-detail' post.pk %}"></a>
+                        <a href="{{ post.username.profile.get_absolute_url }}"><img src="{{ post.username.profile.profile_pic.url }}" class="rounded-circle" width="30" height="30" alt=""></a>
+                        {% if not request.user == post.username%}
+                            <a class="text-dark" href="{{ post.username.profile.get_absolute_url }}"><b>{{ post.username }}</b></a>
+                        {% else %}
+                            <a class="text-dark" href="{% url 'home' %}"><b>{{ post.username }}</b></a>
+                        {% endif %}
+                        <br><small class="text-muted">Posted on {{ post.date_posted }}</small>
+                        <br><br>
+                        <p class="text-dark">{{ post.description }}</p>
+                        {% if post.pic %}
+                            <img class="mx-auto d-block" src="{{ post.pic.url }}" alt=" " style="max-block-size: 300px">
+                        {% endif %}
+                      </div>
+                      <div class="card-footer">
+                        <button class="btn btn-primary mr-3 like" id="{{ post.id }}">
+                            Like
+                        </button>
+                      </div>
+                    </div>
+                {% endfor %}
+                <!-- paginates post list -->
+                {% if posts.has_previous %}
+                    <a class="btn btn-outline-primary mb-4" href="?page=1">First</a>
+                    <a class="btn btn-outline-primary mb-4" href="?page={{ posts.previous_page_number }}">Previous</a>
+                {% endif %}
+
+                {% for num in posts.paginator.page_range %}
+                    {% if posts.number == num %}
+                      <a class="btn btn-primary mb-4" href="?page={{ num }}">{{ num }}</a>
+                    {% elif num > posts.number|add:'-3' and num < posts.number|add:'3' %}
+                      <a class="btn btn-outline-primary mb-4" href="?page={{ num }}">{{ num }}</a>
+                    {% endif %}
+                {% endfor %}
+
+                {% if posts.has_next %}
+                    <a class="btn btn-outline-primary mb-4" href="?page={{ posts.next_page_number }}">Next</a>
+                    <a class="btn btn-outline-primary mb-4" href="?page={{ posts.paginator.num_pages }}">Last</a>
+                {% endif %}
+{% endblock %}

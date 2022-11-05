@@ -5,6 +5,7 @@
   <div class="row">
   <div class="col-md-3">
       <div class="card card-signin my-5">
+          <!-- card to show current user information on search page -->
         <a href="{% url 'profile' %}">
             <img class="rounded-circle d-block mx-auto mt-1" src="{{ request.user.profile.profile_pic.url }}"  alt=""  width="100" height="100"/>
         </a>
@@ -20,6 +21,7 @@
       </div>
     </div>
     <div class="col-md-8">
+    <!-- if no user matches the search -->
       {% if not users %}
       <br /><br />
       <h2><i>No such users found!</i></h2>
@@ -38,6 +40,7 @@
           <a class="text-dark" href="{{ user_p.profile.get_absolute_url }}" style="text-decoration: none"
             ><b>{{ user_p }}</b></a
           >
+              <!-- friend request buttons -->
           {% if not user_p.user in sent %}
           <small class="float-right">
             <a class="btn btn-primary btn-sm mr-2" href="{% url 'send_friend_request' user_p.id %}">Add Friend</a>

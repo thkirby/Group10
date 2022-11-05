@@ -1,7 +1,15 @@
+from django.test import TestCase, Client
 from django.contrib.auth.models import User
+from django.urls import reverse
 from django.test import TransactionTestCase
 from django.contrib.auth import authenticate
+from feed.models import Post, Comment, Like
+from feed.models import timezone
+from users.models import FriendRequest, Profile
+from users.views import *
 
+
+# test cases for login/registration
 class SigninTest(TransactionTestCase):
 
     def setUp(self):
@@ -22,3 +30,122 @@ class SigninTest(TransactionTestCase):
     def test_wrong_pssword(self):
         user = authenticate(username='test', password='wrong')
         self.assertFalse(user is not None and user.is_authenticated)
+
+
+# test cases for post creation
+class TestPosts(TestCase):
+    def setUp(self):
+        user = User(username='test')
+        user.save()
+        self.post = Post.objects.create(
+            username=user,
+            description='test post',
+            pic=None,
+            date_posted=timezone.now())
+
+        self.post.save()
+
+    def tearDown(self):
+        self.post.delete()
+
+    # test that post was created
+    def test_post_valid(self):
+        post_count = Post.objects.all().count()
+        self.assertEqual(post_count, 1)
+
+    # test that username field was created and stored
+    def test_post_name(self):
+        post = Post.objects.get(pk=1)
+        field = post._meta.get_field('username').verbose_name
+        self.assertEquals(field, 'username')
+
+    # test that post description was created and stored
+    def test_post_description(self):
+        post = Post.objects.get(pk=1)
+        description = post.description
+        self.assertEquals(description, post.description)
+
+
+class TestCommentLikesSharing(TestCase):
+    def setUp(self):
+        self.user = User(username='test', email='test@test.com')
+        self.user2 = User(username='test2', email='test2@fake.com')
+        self.user.save()
+        self.user2.save()
+
+        self.post = Post.objects.create(
+            username=self.user,
+            shared_username=self.user2,
+            shared_description='shared post',
+            description='test post',
+            pic=None,
+            date_posted=timezone.now())
+        self.post.save()
+
+        self.comment = Comment.objects.create(
+            post_id=self.post.pk,
+            username=self.user2,
+            comment='test comment',
+            comment_date=timezone.now())
+        self.comment.save()
+
+        self.like = Like.objects.create(
+            post_id=self.post.pk,
+            user_id=self.user2.pk
+        )
+        self.like.save()
+
+    # test that comment was created on the correct post
+    def test_comment_on_post(self):
+        comment = self.comment.post_id
+        self.assertEquals(self.post.pk, comment)
+
+    # test that comment contents is created and stored
+    def test_comment_content(self):
+        comment = Comment.objects.get(pk=1)
+        content = comment.comment
+        self.assertEquals(self.comment.comment, content)
+
+    # test that the correct post was liked
+    def test_liked_post(self):
+        like = self.like.post_id
+        self.assertEqual(self.post.pk, like)
+
+
+# test cases for friend requests
+class TestFriendRequest(TestCase):
+    def setUp(self):
+        self.user = User(username='test', email='test@test.com')
+        self.user.save()
+        self.user2 = User(username='test2', email='test2@fake.com')
+        self.user2.save()
+        self.send_request_url = reverse('send_friend_request', args=[self.user.pk])
+
+    def tearDown(self):
+        self.user.delete()
+        self.user2.delete()
+
+    # test if friend request is valid
+    def test_valid_fr(self):
+        request = FriendRequest.objects.create(
+            to_user=self.user2,
+            from_user=self.user)
+        sent = request.__str__()
+        self.assertEquals(sent, "From test, to test2")
+
+    # test if friend request is invalid
+    def test_invalid_fr(self):
+        request = FriendRequest.objects.create(
+            to_user=self.user2,
+            from_user=self.user)
+        sent = request.__str__()
+        self.assertFalse(sent is "From test, to test2")
+
+    # test if friend request is sent
+    def test_freinds_send_request_post(self):
+        self.client = Client(HTTP_REFERER='/users/')
+        self.client.force_login(self.user)
+        data = {'from_user': self.user, 'to_user': self.user2}
+        response = self.client.post(self.send_request_url, data)
+
+        self.assertEqual(response.status_code, 302)

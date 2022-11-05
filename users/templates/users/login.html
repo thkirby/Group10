@@ -2,6 +2,7 @@
 <html lang="en">
 {% extends 'feed/base.html' %} {% load static %} {% load crispy_forms_tags %}
 {% block content %}
+    <!-- log in required catch page -->
 <div class="container">
     <div class="row justify-content-center mt-5">
         <div class="col-md-auto text-center mt-5">
@@ -11,6 +12,7 @@
                     <div class="alert alert-{{ message.tags }}"> {{ message }} </div>
                 {% endfor %}
             {% endif %}
+        <!-- log in form -->
             <div class="card card-signin my-3">
                 <div class="card-body" style="background: whitesmoke">
                     <div class="d-grid justify-content-center">
