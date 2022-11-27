@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path
-from .views import Index, CreatePost, PostDetailView, SharePostView, PostEditView
+from .views import Index, CreatePost, PostDetailView, SharePostView, PostEditView, ListThreads, CreateThread
 from . import views
 
 # url patterns to handle redirection and linking between pages
@@ -13,4 +13,6 @@ urlpatterns = [
     path('post/comment/delete/<int:pk>/', views.comment_delete, name='comment-delete'),
     path('like/', views.like, name='post-like'),
     path('share/<int:pk>/', SharePostView.as_view(), name='share-post'),
+    path('inbox/', ListThreads.as_view(), name='inbox'),
+    path('inbox/create-message/', CreateThread.as_view(), name='create-message'),
 ]

@@ -22,6 +22,7 @@
             {% if request.user == u %}
             <div class="edit_profile pb-2">
                 <a class="fs-6 text-decoration-none mx-2" href="{% url 'edit_profile' %}">Edit Profile</a>
+                <a class="p-2" href="{% url 'inbox' %}"><i class="fa-solid fa-message"></i></a>
             </div>
                 {% endif %}
                 {% if request.user == u %}

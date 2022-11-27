@@ -1,0 +1,29 @@
+{% extends 'feed/base.html' %} {% load crispy_forms_tags %} {% load static %}
+
+{% block content %}
+    {% include 'feed/navbar.html' %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 p-5">
+                <h3>Messages</h3>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12 p-5">
+                <form method="GET" action="{% url 'create-message' %}">
+                    <button class="btn btn-light p-3" type="submit">Write a Message</button>
+                </form>
+            </div>
+        </div>
+
+        {% for thread in threads.all %}
+            <div class="row mb-3">
+                <div class="card col-md-12 p-5 shadow-sm">
+                    <h5>{{ thread.user }} - {{ thread.reciever }}</h5>
+                    <a class="stretched-link" href="{% url 'thread' thread.pk %}"></a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock content %}

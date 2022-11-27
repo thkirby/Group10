@@ -21,6 +21,15 @@
                 </div>
             </div>
         <!-- friend requests recieved and sent display -->
+        <div class="message pb-2">
+            <small
+                    ><a
+                      class="btn btn-primary"
+                      href="/users/friend-request/send/{{ u.id }}"
+                      ><i class="fa-solid fa-message"></i></a
+                    ></small
+                  >
+        </div>
         <div class="friend_status pb-2">
                 {% if button_status == 'not_friend' %}
                   <small

@@ -1,0 +1,29 @@
+{% extends 'feed/base.html' %} {% load crispy_forms_tags %} {% load static %}
+
+{% block content %}
+    {% include 'feed/navbar.html' %}
+    <div class="container">
+        <div class="row p-3">
+            <a type="button" class="btn text-primary fw-bolder" href="javascript:history.back()"
+                        style="max-width: fit-content">Back to Inbox
+            </a>
+        </div>
+        <div class="row">
+            <div class="col-md-12 p-5">
+                <h3>Write a Message</h3>
+            </div>
+        </div>
+        <div class="row justify-content-center mt-3 mb-5">
+            <div class="col-md-5 col-sm-12">
+                <form method="POST">
+                    {% csrf_token %}
+                    <p>Enter the username of the person you want to message.</p>
+                    {{ form | crispy }}
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-success mt-3" type="submit">Continue</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

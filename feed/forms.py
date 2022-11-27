@@ -26,3 +26,11 @@ class NewPostForm(forms.ModelForm):
 class SharePostForm(forms.Form):
     description = forms.CharField(label='', widget=forms.Textarea(attrs={
                                 'rows': '4', 'placeholder': 'Type something...'}))
+
+
+class ThreadForm(forms.Form):
+    username = forms.CharField(label='', max_length=100)
+
+
+class MessageForm(forms.Form):
+    body = forms.CharField(label='', max_length=255)
