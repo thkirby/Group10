@@ -22,13 +22,6 @@
             </div>
         <!-- friend requests recieved and sent display -->
         <div class="message pb-2">
-            <small
-                    ><a
-                      class="btn btn-primary"
-                      href="/users/friend-request/send/{{ u.id }}"
-                      ><i class="fa-solid fa-message"></i></a
-                    ></small
-                  >
         </div>
         <div class="friend_status pb-2">
                 {% if button_status == 'not_friend' %}
@@ -210,11 +203,11 @@
                          <button class="btn like float-sm-start" id="{{ post.id }}">
                              {% if post in is_liked %}
                                  <a type="button" class="btn btn-danger btn-sm" href="{% url 'post-like' %}"
-                                    id="likebtn{{ post.id }}">
+                                    id="like-btn{{ post.id }}">
                                      <i class="fa-solid fa-heart-crack"></i></a>
                              {% else %}
                                  <a type="button" class="btn btn-primary btn-sm" href="{% url 'post-like' %}"
-                                    id="likebtn{{ post.id }}">
+                                    id="like-btn{{ post.id }}">
                                      <i class="fa-solid fa-heart"></i></a>
                              {% endif %}
                          </button>
@@ -336,14 +329,14 @@
         },
         success: function(response){
           if(response.liked){
-              $('#likebtn' + id).html('<i class="fa-solid fa-heart-crack"></i>');
-              $('#likebtn' + id).css("background-color", "#dc3545")
-              $('#likebtn' + id).css("border-color", "#dc3545")
+              $('#like-btn' + id).html('<i class="fa-solid fa-heart-crack"></i>');
+              $('#like-btn' + id).css("background-color", "#dc3545")
+              $('#like-btn' + id).css("border-color", "#dc3545")
           }
           else{
-              $('#likebtn' + id).html('<i class="fa-solid fa-heart"></i>');
-              $('#likebtn' + id).css("background-color", "#007bff")
-              $('#likebtn' + id).css("border-color", "#007bff")
+              $('#like-btn' + id).html('<i class="fa-solid fa-heart"></i>');
+              $('#like-btn' + id).css("background-color", "#007bff")
+              $('#like-btn' + id).css("border-color", "#007bff")
 
           }
         }

@@ -33,4 +33,4 @@ class ThreadForm(forms.Form):
 
 
 class MessageForm(forms.Form):
-    body = forms.CharField(label='', max_length=255)
+    textbody = forms.CharField(label='', max_length=255)

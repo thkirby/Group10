@@ -9,7 +9,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from .forms import UserRegistrationForm, UserUpdateForm, ProfileUpdateForm
 from feed.forms import NewPostForm, SharePostForm
-from feed.models import Post, Like
+from feed.models import Post, Like, Messages, Notifications
 from django.views.generic import ListView
 import random
 
@@ -47,7 +47,7 @@ def users_list(request):
             friends.remove(i)
     for se in sent_friend_requests:
         sent_to.append(se.to_user)
-    friends = list(set(friends))
+
     context = {
         'users': friends,
         'sent': sent_to
@@ -125,8 +125,18 @@ def delete_friend(request, id):
 def search_users(request):
     query = request.GET.get('q')
     object_list = User.objects.filter(username__icontains=query)
+    sent_friend_requests = FriendRequest.objects.filter(from_user=request.user)
+    p = request.user.profile
+    friends = p.friends.all()
+
+    sent_to = []
+
+    for se in sent_friend_requests:
+        sent_to.append(se.to_user)
     context = {
-        'users': object_list
+        'users': object_list,
+        'sent': sent_to,
+        'friends': friends
     }
     return render(request, "users/search_users.html", context)
 
@@ -154,6 +164,7 @@ class ActiveProfileView(LoginRequiredMixin, ListView):
         sent_friend_requests = FriendRequest.objects.filter(from_user=active_profile.user)
         rec_friend_requests = FriendRequest.objects.filter(to_user=active_profile.user)
         friends_list = active_profile.friends.all()
+        rec_message = Notifications.message
         form = NewPostForm()
         share_form = SharePostForm()
         liked = [i for i in Post.objects.all() if Like.objects.filter(user=active_profile.user, post=i)]
@@ -192,6 +203,7 @@ class ActiveProfileView(LoginRequiredMixin, ListView):
             'post_form': form,
             'share_form': share_form,
             'posts': posts,
+            'rec_message': rec_message,
         }
         return render(request, 'users/profile.html', context)
 

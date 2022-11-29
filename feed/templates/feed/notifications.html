@@ -1,0 +1,9 @@
+{% for notification in notifications %}
+    {% if notification.message %}
+        {% if notification.sending_user.pk %}
+         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                {{ notifications.count }}
+        </span>
+        {% endif %}
+    {% endif %}
+{% endfor %}

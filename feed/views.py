@@ -1,3 +1,4 @@
+import slug as slug
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.views import View
@@ -11,8 +12,10 @@ from django.views.generic import UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 import json
-from .models import Post, Like, Comment, ThreadModel, MessageModel
+from .models import Post, Like, Comment, Thread, Messages, Notifications
+from users.models import Profile
 
+User = get_user_model()
 
 class Index(View):
     def get(self, request, *args, **kwargs):
@@ -137,52 +140,101 @@ class SharePostView(View):
         return redirect('home')
 
 
-class ListThreads(View):
+class CreateMessage(View):
+    def post(self, request, pk, *args, **kwargs):
+        thread = Thread.objects.get(pk=pk)
+        if thread.reciever == request.user:
+            reciever = thread.user
+        else:
+            reciever = thread.reciever
+        text = Messages(
+            thread=thread,
+            sender_user=request.user,
+            reciever_user=reciever,
+            textbody=request.POST.get('textbody')
+        )
+        text.save()
+        notification = Notifications.objects.create(
+            type=1,
+            sending_user=request.user,
+            recieving_user=reciever,
+            message=thread
+        )
+        return redirect('message-thread', pk=pk)
+
+
+class ListThreads(LoginRequiredMixin, View):
+
     def get(self, request, *args, **kwargs):
-        threads = ThreadModel.objects.filter(Q(user=request.user) | Q(reciever=request.user))
+        threads = Thread.objects.filter(Q(user=request.user) | Q(reciever=request.user))
+        notifications = Notifications.objects.all()
+        if len(notifications) != 0:
+            try:
+                notifications = Notifications.objects.get(recieving_user=request.user)
+            except:
+                notifications = Notifications.objects.get(sending_user=request.user)
         context = {
-            'threads': threads
+            'threads': threads,
+            'notifications': notifications
         }
         return render(request, 'feed/inbox.html', context)
 
 
-class CreateThread(View):
+class CreateThread(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         form = ThreadForm()
         context = {
             'form': form
         }
-        return render(request, 'feed/create_message.html', context)
+        return render(request, 'feed/create_thread.html', context)
 
     def post(self, request, *args, **kwargs):
         form = ThreadForm(request.POST)
         username = request.POST.get('username')
-
         try:
             reciever = User.objects.get(username=username)
-            if ThreadModel.objects.filter(user=request.user, reciever=reciever).exists():
-                thread = ThreadModel.objects.filter(user=request.user, reciever=reciever)[0]
-                return redirect('thread', pk=thread.pk)
-            elif ThreadModel.objects.filter(user=reciever, reciever=request.user).exists():
-                thread = ThreadModel.objects.filter(user=reciever, reciever=request.user)[0]
-                return redirect('thread', pk=thread.pk)
+            if Thread.objects.filter(user=request.user, reciever=reciever).exists():
+                thread = Thread.objects.filter(user=request.user, reciever=reciever).first()
+                return redirect('message-thread', pk=thread.pk)
+            elif Thread.objects.filter(user=reciever, reciever=request.user).exists():
+                thread = Thread.objects.filter(user=reciever, reciever=request.user).first()
+                return redirect('message-thread', pk=thread.pk)
             if form.is_valid():
-                thread = ThreadModel(user=request.user, reciever=reciever)
+                thread = Thread(user=request.user, reciever=reciever)
                 thread.save()
-                return redirect('thread', pk=thread.pk)
+                return redirect('message-thread', pk=thread.pk)
         except:
-            redirect('create-message')
+            redirect('create-thread')
 
 
-class ThreadView(View):
+class ThreadView(LoginRequiredMixin, View):
     def get(self, request, pk, *args, **kwargs):
         form = MessageForm()
-        thread = ThreadModel.objects.get(pk=pk)
-        message_list = MessageModel.objects.filter(thread__pk__contain=pk)
+        thread = Thread.objects.get(pk=pk)
+        message_list = Messages.objects.filter(thread__pk__contains=pk)
+
         context = {
-            'thead': thread,
+            'thread': thread,
             'form': form,
-            'message_list': message_list
+            'message_list': message_list,
         }
 
-        return render(request, 'feed/thread.html', context)
+        return render(request, 'feed/message_thread.html', context)
+
+
+def search_posts(request):
+    query = request.GET.get('q')
+    object_list = Post.objects.filter(description__contains=query)
+    context = {
+        'posts': object_list
+    }
+    return render(request, "feed/search_posts.html", context)
+
+
+class DeleteNotificaiton(View):
+        def get(self, request, *args, **kwargs):
+            user = User.
+            thread = Thread.objects.get(reciever=request.user.profile)
+            notification = Notifications.objects.filter(message=thread)
+
+            return redirect('message-thread', thread.pk)

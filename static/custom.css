@@ -8,13 +8,17 @@ body{
     border-radius: 30px;
     padding: 10px 25px;
     width: 25%;
+    text-align: start;
+    word-wrap: normal;
 }
 
 .recieved-message{
-    background-color: #4CAF50;
+    background-color: #35ba3a;
     color: white;
     border-radius: 30px;
     padding: 10px 25px;
     width: 25%;
     float: right;
+    text-align: start;
+    word-wrap: normal;
 }
