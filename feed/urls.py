@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path
 from .views import Index, CreatePost, PostDetailView, SharePostView, PostEditView, ListThreads, CreateThread, \
-    ThreadView, CreateMessage, DeleteNotificaiton
+    ThreadView, CreateMessage, DeleteNotificaiton, CreateThreadButton
 from . import views
 
 # url patterns to handle redirection and linking between pages
@@ -19,4 +19,6 @@ urlpatterns = [
     path('inbox/<int:pk>/', ThreadView.as_view(), name='message-thread'),
     path('inbox/<int:pk>/create-message', CreateMessage.as_view(), name='create-message'),
     path('notification/delete/<int:pk>', DeleteNotificaiton.as_view(), name='delete-notification'),
+    path('search_posts/', views.search_posts, name='search_posts'),
+    path('users/create-thread/<int:id>/', views.CreateThreadButton, name='create-thread-button'),
 ]

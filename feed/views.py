@@ -1,8 +1,9 @@
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.views import View
 from django.urls import reverse_lazy
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib import messages
 from django.utils import timezone
@@ -13,6 +14,9 @@ from django.contrib.auth.decorators import login_required
 import json
 from .models import Post, Like, Comment, Thread, Messages, Notifications
 from users.models import Profile
+
+
+User = get_user_model()
 
 
 class Index(View):
@@ -221,7 +225,7 @@ class ThreadView(LoginRequiredMixin, View):
 
 def search_posts(request):
     query = request.GET.get('q')
-    object_list = Post.objects.filter(description__contains=query)
+    object_list = Post.objects.filter(description__icontains=query)
     context = {
         'posts': object_list
     }
@@ -229,11 +233,28 @@ def search_posts(request):
 
 
 class DeleteNotificaiton(View):
-        def get(self, request, pk, *args, **kwargs):
-            thread = Thread.objects.get(pk=pk)
-            try:
-                Notifications.objects.get(recieving_user=request.user).delete()
-            except:
-                pass
+    def get(self, request, pk, *args, **kwargs):
+        thread = Thread.objects.get(pk=pk)
+        try:
+            Notifications.objects.get(recieving_user=request.user).delete()
+        except:
+            pass
 
-            return redirect('message-thread', pk=thread.pk)
+        return redirect('message-thread', pk=thread.pk)
+
+
+def CreateThreadButton(request, id,):
+    user = get_object_or_404(User, id=id)
+    reciever = user
+
+    if Thread.objects.filter(user=request.user, reciever=reciever).exists():
+        thread = Thread.objects.filter(user=request.user, reciever=reciever).first()
+        return redirect('message-thread', pk=thread.pk)
+    elif Thread.objects.filter(user=reciever, reciever=request.user).exists():
+        thread = Thread.objects.filter(user=reciever, reciever=request.user).first()
+        return redirect('message-thread', pk=thread.pk)
+    else:
+        thread = Thread.objects.create(user=request.user, reciever=reciever)
+        return redirect('message-thread', pk=thread.pk)
+
+
