@@ -1,16 +1,12 @@
 {% extends 'feed/base.html' %} {% load crispy_forms_tags %} {% load static %}
 
 {% block content %}
-{% if messages %}
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }}"> {{ message }} </div>
-                {% endfor %}
-            {% endif %}
+
     {% include 'feed/navbar.html' %}
     <div class="container">
     <div class="row p-3">
-            <a type="button" class="btn text-primary fw-bolder" href="{% url 'inbox' %}"
-                        style="max-width: fit-content">Back to Inbox
+            <a type="button" class="btn text-primary fw-bolder" href="javascript:history.back()"
+                        style="max-width: fit-content">Go back
             </a>
     </div>
         <div class="row">
