@@ -1,4 +1,3 @@
-import slug as slug
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.views import View
@@ -15,7 +14,6 @@ import json
 from .models import Post, Like, Comment, Thread, Messages, Notifications
 from users.models import Profile
 
-User = get_user_model()
 
 class Index(View):
     def get(self, request, *args, **kwargs):
@@ -167,12 +165,11 @@ class ListThreads(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         threads = Thread.objects.filter(Q(user=request.user) | Q(reciever=request.user))
-        notifications = Notifications.objects.all()
-        if len(notifications) != 0:
-            try:
-                notifications = Notifications.objects.get(recieving_user=request.user)
-            except:
-                notifications = Notifications.objects.get(sending_user=request.user)
+        try:
+            notifications = Notifications.objects.get(recieving_user=request.user)
+        except:
+            notifications = None
+
         context = {
             'threads': threads,
             'notifications': notifications
@@ -232,9 +229,11 @@ def search_posts(request):
 
 
 class DeleteNotificaiton(View):
-        def get(self, request, *args, **kwargs):
-            user = User.
-            thread = Thread.objects.get(reciever=request.user.profile)
-            notification = Notifications.objects.filter(message=thread)
+        def get(self, request, pk, *args, **kwargs):
+            thread = Thread.objects.get(pk=pk)
+            try:
+                Notifications.objects.get(recieving_user=request.user).delete()
+            except:
+                pass
 
-            return redirect('message-thread', thread.pk)
+            return redirect('message-thread', pk=thread.pk)

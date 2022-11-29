@@ -18,5 +18,5 @@ urlpatterns = [
     path('inbox/create-thread/', CreateThread.as_view(), name='create-thread'),
     path('inbox/<int:pk>/', ThreadView.as_view(), name='message-thread'),
     path('inbox/<int:pk>/create-message', CreateMessage.as_view(), name='create-message'),
-    path('notification/delete/', DeleteNotificaiton.as_view(), name='delete-notification'),
+    path('notification/delete/<int:pk>', DeleteNotificaiton.as_view(), name='delete-notification'),
 ]
