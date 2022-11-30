@@ -228,7 +228,8 @@ class ThreadView(LoginRequiredMixin, View):
 
 def search_posts(request):
     query = request.GET.get('q')
-    object_list = Post.objects.filter(description__contains=query)
+    object_list = Post.objects.filter(description__contains=query).annotate(lr=Coalesce(Max('shared_date'),
+                                                                                        'date_posted')).order_by('-lr')
     share_form = SharePostForm()
 
     context = {

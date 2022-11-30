@@ -14,9 +14,13 @@
                     </div>
                   </div>
             {% endif %}
+
 	    <div class="row justify-content-center">
 	      <div class="col-md-5 me-4">
-
+                <form class="d-flex mt-2 pb-2" role="search" action="{% url 'search_posts' %}" method="get">
+                    <input class="form-control me-2" name="q" type="search" placeholder="Search posts..." aria-label="Search" >
+                    <button class="btn btn-success" type="submit">Search</button>
+                </form>
               <!--post list display-->
                 {% for post in posts%}
                     <div class="card card-signin my-3" style="width: 500px">

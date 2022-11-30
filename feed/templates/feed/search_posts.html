@@ -16,7 +16,10 @@
             {% endif %}
 	    <div class="row justify-content-center">
 	      <div class="col-md-5 me-4">
-
+                <form class="d-flex mt-2 pb-2" role="search" action="{% url 'search_posts' %}" method="get">
+                    <input class="form-control me-2" name="q" type="search" placeholder="Search posts..." aria-label="Search" >
+                    <button class="btn btn-success" type="submit">Search</button>
+                </form>
               <!--post list display-->
                 {% for post in posts%}
                     <div class="card card-signin my-3" style="width: 500px">
@@ -146,6 +149,27 @@
                       </div>
                     </div>
                 {% endfor %}
+                <div class="container" style="width: max-content">
+               <!-- pagination of post list display -->
+                {% if posts.paginator.num_pages > 1  %}
+                    {% if posts.has_previous %}
+                        <a class="btn btn-outline-primary mb-4" href="?page=1">First</a>
+                        <a class="btn btn-outline-primary mb-4" href="?page={{ posts.previous_page_number }}">Previous</a>
+                    {% endif %}
+                    {% for num in posts.paginator.page_range %}
+                        {% if posts.number == num %}
+                          <a class="btn btn-primary mb-4" href="?page={{ num }}">{{ num }}</a>
+                        {% elif num > posts.number|add:'-3' and num < posts.number|add:'3' %}
+                          <a class="btn btn-outline-primary mb-4" href="?page={{ num }}">{{ num }}</a>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if posts.has_next %}
+                        <a class="btn btn-outline-primary mb-4" href="?page={{ posts.next_page_number }}">Next</a>
+                        <a class="btn btn-outline-primary mb-4" href="?page={{ posts.paginator.num_pages }}">Last</a>
+                    {% endif %}
+                {% endif %}
+                </div>
               </div>
         </div>
     </div>
