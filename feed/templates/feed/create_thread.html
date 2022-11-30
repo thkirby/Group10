@@ -4,7 +4,7 @@
     {% include 'feed/navbar.html' %}
     <div class="container">
         <div class="row p-3">
-            <a type="button" class="btn text-primary fw-bolder" href="javascript:history.back()"
+            <a type="button" class="btn text-primary fw-bolder" href="{% url 'inbox' %}"
                         style="max-width: fit-content">Back to Inbox
             </a>
         </div>
@@ -14,7 +14,14 @@
             </div>
         </div>
         <div class="row justify-content-center mt-3 mb-5">
+
             <div class="col-md-5 col-sm-12">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible show fade" role="alert" style="color: crimson"> {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
                 <form method="POST">
                     {% csrf_token %}
                     <p>Enter the username of the person you want to message.</p>

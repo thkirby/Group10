@@ -22,7 +22,7 @@
                 <div class="card col-md-5 p-5 shadow-sm">
                     <h5>{{ thread.user }} messaging {{ thread.reciever }}</h5>
                     <a class="stretched-link" href="{% url 'delete-notification' thread.pk%}"></a>
-                    {% if notifications.message == thread%}
+                    {% if notifications.message == thread %}
                         {% display_notifications %}
                     {% endif %}
                 </div>
