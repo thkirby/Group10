@@ -81,6 +81,7 @@ def post_delete(request, pk):
     post = Post.objects.get(pk=pk)
     if request.user == post.username:
         Post.objects.get(pk=pk).delete()
+
     return redirect('home')
 
 
@@ -141,7 +142,7 @@ class SharePostView(View):
             share_post.save()
         else:
             share_form = SharePostForm()
-        return redirect('home')
+        return redirect(request.META['HTTP_REFERER'])
 
 
 class CreateMessage(View):

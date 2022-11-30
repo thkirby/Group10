@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path
 from .views import Index, CreatePost, PostDetailView, SharePostView, PostEditView, ListThreads, CreateThread, \
-    ThreadView, CreateMessage, DeleteNotificaiton, CreateThreadButton
+    ThreadView, CreateMessage, DeleteNotificaiton
 from . import views
 
 # url patterns to handle redirection and linking between pages
