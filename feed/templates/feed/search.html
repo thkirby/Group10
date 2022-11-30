@@ -16,12 +16,11 @@
             {% endif %}
 	    <div class="row justify-content-center">
 	      <div class="col-md-5 me-4">
-
               <!--post list display-->
+                <h6 class="fw-bolder text-dark mt-3">Posts</h6>
                 {% for post in posts%}
                     <div class="card card-signin my-3" style="width: 500px">
                       <div class="card-body">
-
                       {% if post.shared_username %}
                           <div class="position-relative border-bottom mb-3">
                               {% if not request.user == post.shared_username%}
@@ -146,9 +145,46 @@
                       </div>
                     </div>
                 {% endfor %}
+            <!-- if no user matches the search -->
+              {% if not users %}
+              <br /><br />
+              <h2><i>No such users found!</i></h2>
+              {% else %}
+              <h6 class="fw-bolder text-dark mt-3">Users</h6>
+              <div class="card card-signin">
+                <div class="card-body">
+                  {% for user_p in users %}
+                  <a href="{{ user_p.profile.get_absolute_url }}"
+                    ><img
+                      src="{{ user_p.profile.profile_pic.url }}"
+                      class="rounded mr-2"
+                      width="40"
+                      height="40"
+                      alt=""
+                  /></a>
+                  <a class="text-dark" href="{{ user_p.profile.get_absolute_url }}" style="text-decoration: none">
+                      <b>{{ user_p }}</b></a>
+
+                      <!-- friend request buttons -->
+                      {% if not user_p.profile in friends %}
+                      {% if not user_p in sent%}
+                      <small class="float-right">
+                        <a class="btn btn-primary btn-sm mr-2" href="{% url 'send_friend_request' user_p.id %}">Add Friend</a>
+                      </small>
+                      {% else%}
+                      <small class="float-right">
+                        <a class="btn btn-warning btn-sm mr-2" href="{% url 'cancel_friend_request' user_p.id %}">Cancel Request</a>
+                      </small>
+                      {% endif %}
+                      {% endif %}
+                      <br /><br />
+                    {% endfor %}
+                </div>
               </div>
+              {% endif %}
         </div>
-    </div>
+      </div>
+  </div>
 {% endblock content %}
 {% block jsfiles %}
     <!-- script for the like button -->

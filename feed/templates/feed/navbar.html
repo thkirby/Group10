@@ -19,19 +19,11 @@
                   </li>
                    <!-- drop down for more button links -->
                   <li class="nav-item dropdown">
-                      <a class="navbar-brand dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Dropdown
-                      </a>
-                      <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#">Action</a></li>
-                        <li><a class="dropdown-item" href="#">Another action</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#">Something else here</a></li>
-                      </ul>
+                      <a class="navbar-brand text-white" href={% url 'post-page' %}>Posts</a>
                   </li>
               </ul>
             <!-- search user form and field -->
-              <form class="d-flex" role="search" action="{% url 'search_users' %}" method="get">
+              <form class="d-flex" role="search" action="{% url 'search' %}" method="get">
                 <input class="form-control me-2" name="q" type="search" placeholder="Search" aria-label="Search" >
                 <button class="btn btn-success" type="submit">Search</button>
               </form>

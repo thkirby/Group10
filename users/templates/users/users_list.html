@@ -1,6 +1,7 @@
 {% extends "feed/base.html" %} {% load static %}
 {% block content %}
 {% include 'feed/navbar.html' %}
+
 <div class="container">
   <div class="row">
     <div class="col-md-3">
@@ -25,6 +26,10 @@
       {% if users %}
       <div class="card card-signin my-5">
         <div class="card-body">
+        <form class="d-flex pb-2" role="search" action="{% url 'search_users' %}" method="get">
+                <input class="form-control me-2" name="q" type="search" placeholder="Search users..." aria-label="Search" >
+                <button class="btn btn-success" type="submit">Search</button>
+        </form>
           {% for user_p in users %}
           <a href="{{ user_p.get_absolute_url }}"
             ><img

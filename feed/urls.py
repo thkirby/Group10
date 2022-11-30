@@ -20,5 +20,7 @@ urlpatterns = [
     path('inbox/<int:pk>/create-message', CreateMessage.as_view(), name='create-message'),
     path('notification/delete/<int:pk>', DeleteNotificaiton.as_view(), name='delete-notification'),
     path('search_posts/', views.search_posts, name='search_posts'),
+    path('search/', views.search, name='search'),
+    path('posts/', views.post_page, name='post-page'),
     path('users/create-thread/<int:id>/', views.CreateThreadButton, name='create-thread-button'),
 ]

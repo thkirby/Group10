@@ -1,6 +1,9 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
+from django.core.paginator import Paginator
+from django.db.models import Max
 from django.db.models import Q
+from django.db.models.functions import Coalesce
 from django.views import View
 from django.urls import reverse_lazy
 from django.shortcuts import render, redirect, get_object_or_404
@@ -13,8 +16,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 import json
 from .models import Post, Like, Comment, Thread, Messages, Notifications
-from users.models import Profile
-
+from users.models import Profile, FriendRequest
 
 User = get_user_model()
 
@@ -225,11 +227,52 @@ class ThreadView(LoginRequiredMixin, View):
 
 def search_posts(request):
     query = request.GET.get('q')
-    object_list = Post.objects.filter(description__icontains=query)
+    object_list = Post.objects.filter(description__contains=query)
+    share_form = SharePostForm()
+
     context = {
-        'posts': object_list
+        'posts': object_list,
+        'share_form': share_form,
     }
     return render(request, "feed/search_posts.html", context)
+
+
+def search(request):
+    query = request.GET.get('q')
+    object_list = Post.objects.filter(description__contains=query).annotate(lr=Coalesce(Max('shared_date'),
+                                                                                        'date_posted')).order_by('-lr')
+    user_list = User.objects.filter(username__icontains=query)
+    sent_friend_requests = FriendRequest.objects.filter(from_user=request.user)
+    p = request.user.profile
+    friends = p.friends.all()
+    share_form = SharePostForm()
+    sent_to = []
+
+    for se in sent_friend_requests:
+        sent_to.append(se.to_user)
+    context = {
+        'users': user_list,
+        'sent': sent_to,
+        'friends': friends,
+        'posts': object_list,
+        'share_form': share_form,
+    }
+    return render(request, "feed/search.html", context)
+
+
+def post_page(request):
+    paginator = Paginator(Post.objects.all()
+                          .annotate(lr=Coalesce(Max('shared_date'), 'date_posted'))
+                          .order_by('-lr'), 10)
+    page = request.GET.get('page')
+    posts = paginator.get_page(page)
+    share_form = SharePostForm()
+
+    context = {
+        'posts': posts,
+        'share_form': share_form,
+    }
+    return render(request, "feed/post_page.html", context)
 
 
 class DeleteNotificaiton(View):
@@ -243,7 +286,7 @@ class DeleteNotificaiton(View):
         return redirect('message-thread', pk=thread.pk)
 
 
-def CreateThreadButton(request, id,):
+def CreateThreadButton(request, id, ):
     user = get_object_or_404(User, id=id)
     reciever = user
 
@@ -256,5 +299,3 @@ def CreateThreadButton(request, id,):
     else:
         thread = Thread.objects.create(user=request.user, reciever=reciever)
         return redirect('message-thread', pk=thread.pk)
-
-
