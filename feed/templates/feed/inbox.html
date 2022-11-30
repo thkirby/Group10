@@ -19,8 +19,13 @@
 
         {% for thread in threads %}
             <div class="row mb-3">
-                <div class="card col-md-5 p-5 shadow-sm">
-                    <h5>{{ thread.user }} messaging {{ thread.reciever }}</h5>
+                <div class="card p-3 shadow-sm" style="max-width: 25%">
+                    {% if request.user  == thread.user%}
+                        <h3 class="text-center"> {{ thread.reciever }}</h3>
+                    {% elif request.user == thread.reciever %}
+                        <h3 class="text-center"> {{ thread.user }}</h3>
+                    {% endif  %}
+
                     <a class="stretched-link" href="{% url 'delete-notification' thread.pk%}"></a>
                     {% if notifications.message == thread %}
                         {% display_notifications %}
