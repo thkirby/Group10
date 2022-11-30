@@ -5,16 +5,16 @@
     {% include 'feed/navbar.html' %}
     <div class="container">
     <div class="row p-3">
-            <a type="button" class="btn text-primary fw-bolder" href="javascript:history.back()"
+            <a type="button" class="btn text-primary fw-bolder" href="{% url 'inbox' %}"
                         style="max-width: fit-content">Go back
             </a>
     </div>
         <div class="row">
-            <div class="card col-md-12 mt-5 p-3 shadow-sm">
+            <div class="card col-md-12 mt-5 p-3 shadow-sm text-center">
                 {% if thread.reciever == request.user %}
-                    <h5>{{ thread.user }}</h5>
+                    <h5>Your conversation with {{ thread.user }}</h5>
                 {% else %}
-                    <h5>{{ thread.reciever }}</h5>
+                    <h5>Your conversation with {{ thread.reciever }}</h5>
                 {% endif %}
             </div>
         </div>
@@ -30,12 +30,12 @@
          <div class="col-md-12 my-1">
             {% if message.sender_user == request.user %}
                 <div class="sent-message my-3">
-                    <p>{{ message.textbody }}</p>
+                    <span>{{ message.textbody }}</span>
                 </div>
                 sent
             {% elif message.reciever_user == request.user %}
-                <div class="recieved-message my-3">
-                    <p>{{ message.textbody }}</p>
+                <div class="recieved-message my-3 align-middle">
+                    <span>{{ message.textbody }}</span>
                 </div>
                 <div class="float-end">recieved</div>
             {% endif %}

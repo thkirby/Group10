@@ -173,7 +173,7 @@ class ListThreads(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         threads = Thread.objects.filter(Q(user=request.user) | Q(reciever=request.user))
         try:
-            notifications = Notifications.objects.get(recieving_user=request.user)
+            notifications = Notifications.objects.filter(recieving_user=request.user).first()
         except:
             notifications = None
 
@@ -208,7 +208,8 @@ class CreateThread(LoginRequiredMixin, View):
                 thread.save()
                 return redirect('message-thread', pk=thread.pk)
         except:
-            redirect('create-thread')
+            messages.error(request, 'Username not found.')
+            return redirect('create-thread')
 
 
 class ThreadView(LoginRequiredMixin, View):
@@ -281,7 +282,7 @@ class DeleteNotificaiton(View):
     def get(self, request, pk, *args, **kwargs):
         thread = Thread.objects.get(pk=pk)
         try:
-            Notifications.objects.get(recieving_user=request.user).delete()
+            Notifications.objects.filter(recieving_user=request.user).delete()
         except:
             pass
 

@@ -29,8 +29,10 @@ class SharePostForm(forms.Form):
 
 
 class ThreadForm(forms.Form):
-    username = forms.CharField(label='', max_length=100)
+    username = forms.CharField(label='', max_length=100, widget=forms.TextInput(
+        attrs={'placeholder': 'Enter a username'}))
 
 
 class MessageForm(forms.Form):
-    textbody = forms.CharField(label='', max_length=255)
+    textbody = forms.CharField(label='', max_length=255, widget=forms.TextInput(
+        attrs={'placeholder': 'Type something...'}))
