@@ -1,6 +1,7 @@
 {% extends "feed/base.html" %} {% load static %}
 {% block content %}
 {% include 'feed/navbar.html' %}
+
 <div class="container">
   <div class="row">
     <div class="col-md-3">
@@ -25,6 +26,10 @@
       {% if users %}
       <div class="card card-signin my-5">
         <div class="card-body">
+        <form class="d-flex pb-2" role="search" action="{% url 'search_users' %}" method="get">
+                <input class="form-control me-2" name="q" type="search" placeholder="Search users..." aria-label="Search" >
+                <button class="btn btn-success" type="submit">Search</button>
+        </form>
           {% for user_p in users %}
           <a href="{{ user_p.get_absolute_url }}"
             ><img
@@ -36,14 +41,16 @@
           /></a>
           <a class="text-dark" href="{{ user_p.get_absolute_url }}" style="text-decoration: none"
             ><b>{{ user_p }}</b></a>
-          {% if not user_p.user in sent %}
-          <small class="float-right">
-            <a class="btn btn-primary btn-sm mr-2" href="{% url 'send_friend_request' user_p.id %}">Add Friend</a>
-          </small>
-          {% else %}
-          <small class="float-right">
-            <a class="btn btn-warning btn-sm mr-2" href="{% url 'cancel_friend_request' user_p.id %}">Cancel Request</a>
-          </small>
+          {% if not user_p.profile in friends %}
+              {% if not user_p.user in sent %}
+              <small class="float-right">
+                <a class="btn btn-primary btn-sm mr-2" href="{% url 'send_friend_request' user_p.id %}">Add Friend</a>
+              </small>
+              {% else %}
+              <small class="float-right">
+                <a class="btn btn-warning btn-sm mr-2" href="{% url 'cancel_friend_request' user_p.id %}">Cancel Request</a>
+              </small>
+              {% endif %}
           {% endif %}
           <br /><br />
           {% endfor %}

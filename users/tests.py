@@ -3,8 +3,9 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 from django.test import TransactionTestCase
 from django.contrib.auth import authenticate
-from feed.models import Post, Comment, Like
+from feed.models import Post, Comment, Like, Thread, Messages, Notifications
 from feed.models import timezone
+from feed.views import *
 from users.models import FriendRequest, Profile
 from users.views import *
 
@@ -148,4 +149,89 @@ class TestFriendRequest(TestCase):
         data = {'from_user': self.user, 'to_user': self.user2}
         response = self.client.post(self.send_request_url, data)
 
+        self.assertEqual(response.status_code, 302)
+
+
+class TestDirectMessaging(TestCase):
+    def setUp(self):
+        self.user = User(username='test', email='test@test.com')
+        self.user2 = User(username='test2', email='test2@fake.com')
+        self.user.save()
+        self.user2.save()
+
+        self.thread = Thread.objects.create(
+            user=self.user,
+            reciever=self.user2)
+        self.thread.save()
+
+        self.message = Messages.objects.create(
+            thread=self.thread,
+            sender_user=self.user,
+            reciever_user=self.user2,
+            textbody='test',
+            date=timezone.now())
+        self.message.save()
+
+        self.notification = Notifications.objects.create(
+            type=1,
+            message=self.message.thread,
+            has_seen=False,
+            sending_user=self.user,
+            recieving_user=self.user2,
+            recency=timezone.now()
+        )
+        self.notification.save()
+
+    # test that thread was created
+    def test_thread_valid(self):
+        thread_count = Thread.objects.all().count()
+        self.assertEqual(thread_count, 1)
+
+    # test that message text was created and stored
+    def test_message_text(self):
+        message = self.message
+        text = message.textbody
+        self.assertEquals(text, 'test')
+
+    # test that notification is being recieved by correct user
+    def test_notification_recieved(self):
+        notification = self.notification
+        recieving_user = notification.recieving_user
+        self.assertEquals(recieving_user, self.notification.recieving_user)
+
+
+class TestSearch(TestCase):
+
+    def setUp(self):
+        self.user = User(username='test', email='test@test.com')
+        self.user.save()
+        self.user2 = User(username='fake', email='fake@test.com')
+        self.user2.save()
+        self.send_request_url = None
+        self.post = Post.objects.create(
+            username=self.user,
+            shared_username=self.user2,
+            shared_description='shared post',
+            description='test post',
+            pic=None,
+            date_posted=timezone.now())
+        self.post.save()
+
+    def tearDown(self):
+        self.user.delete()
+        self.user2.delete()
+
+    def test_search_users_url(self):
+        self.send_request_url = reverse('search_users')
+        response = self.client.get(self.send_request_url)
+        self.assertEqual(response.status_code, 302)
+
+    def test_posts_url(self):
+        self.send_request_url = reverse('post-page')
+        response = self.client.get(self.send_request_url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_users_url(self):
+        self.send_request_url = reverse('users_list')
+        response = self.client.get(self.send_request_url)
         self.assertEqual(response.status_code, 302)

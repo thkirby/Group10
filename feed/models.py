@@ -33,3 +33,26 @@ class Comment(models.Model):
 class Like(models.Model):
     user = models.ForeignKey(User, related_name='likes', on_delete=models.CASCADE)
     post = models.ForeignKey(Post, related_name='likes', on_delete=models.CASCADE)
+
+
+class Thread(models.Model):
+    user = models.ForeignKey(User, related_name='+', on_delete=models.CASCADE)
+    reciever = models.ForeignKey(User, related_name='+', on_delete=models.CASCADE)
+
+
+class Messages(models.Model):
+    thread = models.ForeignKey(Thread, related_name='+', on_delete=models.CASCADE, blank=True, null=True)
+    sender_user = models.ForeignKey(User, related_name='+', on_delete=models.CASCADE)
+    reciever_user = models.ForeignKey(User, related_name='+', on_delete=models.CASCADE)
+    textbody = models.CharField(max_length=255, blank=True, null=True)
+    date = models.DateTimeField(default=timezone.now)
+    is_read = models.BooleanField(default=False)
+
+
+class Notifications(models.Model):
+    type = models.IntegerField()
+    message = models.ForeignKey(Thread, on_delete=models.CASCADE, related_name='+', blank=True, null=True)
+    has_seen = models.BooleanField(default=False)
+    sending_user = models.ForeignKey(User, related_name='+', on_delete=models.CASCADE, null=True)
+    recieving_user = models.ForeignKey(User, related_name='+', on_delete=models.CASCADE, null=True)
+    recency = models.DateTimeField(default=timezone.now)

@@ -47,7 +47,7 @@ def users_list(request):
             friends.remove(i)
     for se in sent_friend_requests:
         sent_to.append(se.to_user)
-    friends = list(set(friends))
+
     context = {
         'users': friends,
         'sent': sent_to
@@ -125,8 +125,18 @@ def delete_friend(request, id):
 def search_users(request):
     query = request.GET.get('q')
     object_list = User.objects.filter(username__icontains=query)
+    sent_friend_requests = FriendRequest.objects.filter(from_user=request.user)
+    p = request.user.profile
+    friends = p.friends.all()
+
+    sent_to = []
+
+    for se in sent_friend_requests:
+        sent_to.append(se.to_user)
     context = {
-        'users': object_list
+        'users': object_list,
+        'sent': sent_to,
+        'friends': friends
     }
     return render(request, "users/search_users.html", context)
 
@@ -239,27 +249,28 @@ def edit_profile(request):
 def profile_view(request, slug):
     user_profile = Profile.objects.filter(slug=slug).first()
     user = user_profile.user
-    sent_friend_requests = FriendRequest.objects.filter(from_user=user_profile.user)
-    rec_friend_requests = FriendRequest.objects.filter(to_user=user_profile.user)
-    friends = user_profile.friends.all()
-    liked = [i for i in Post.objects.all() if Like.objects.filter(user=request.user, post=i)]
-    button_status = 'none'
-    post_filter = [user_profile]
-    friend = user_profile.friends.all()
-
-    # filtering user timeline posts for posts made by friends of user
-    for f in friend:
-        if f in post_filter:
-            friend = friend.filter(user=f.user)
-    post_filter += friend
-    # pagination of posts on a page
-    paginator = Paginator(
-        Post.objects.filter(username__profile__in=post_filter).annotate(lr=Coalesce(Max('shared_date'), 'date_posted'))
-        .order_by('-lr'), 10)
-    page = request.GET.get('page')
-    posts = paginator.get_page(page)
-
     if request.user.is_authenticated:
+        sent_friend_requests = FriendRequest.objects.filter(from_user=user_profile.user)
+        rec_friend_requests = FriendRequest.objects.filter(to_user=user_profile.user)
+        friends = user_profile.friends.all()
+        liked = [i for i in Post.objects.all() if Like.objects.filter(user=request.user, post=i)]
+        button_status = 'none'
+        post_filter = [user_profile]
+        friend = user_profile.friends.all()
+
+        # filtering user timeline posts for posts made by friends of user
+        for f in friend:
+            if f in post_filter:
+                friend = friend.filter(user=f.user)
+        post_filter += friend
+        # pagination of posts on a page
+        paginator = Paginator(
+            Post.objects.filter(username__profile__in=post_filter).annotate(lr=Coalesce(Max('shared_date'), 'date_posted'))
+            .order_by('-lr'), 10)
+        page = request.GET.get('page')
+        posts = paginator.get_page(page)
+
+
         if user_profile not in request.user.profile.friends.all():
             button_status = 'not_friend'
 

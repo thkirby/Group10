@@ -1,4 +1,5 @@
-{% extends 'feed/base.html' %} {% load crispy_forms_tags %} {% load static %}
+{% extends 'feed/base.html' %} {% load crispy_forms_tags %} {% load static %} {% load feed_tags %}
+
 {% block content %}
 {% include 'feed/navbar.html' %}
 {% if messages %}
@@ -10,22 +11,24 @@
 {% endif %}
 <div class="container">
     <div class="row mt-3 mx-3">
-        <div class="card shadow-sm col-md-4 col-sm-6 px-3 pt-3 pb-3" style="height: 195px">
+        <div class="card shadow-sm col-md-4 pt-3" style="height: 215px">
         <!-- profile card for a user -->
             <div class="media">
-                <div class="d-flex">
+                <div class="d-flex mb-3">
                     <img class="rounded-circle account-img" src="{{ u.profile.profile_pic.url }}" width="100" height="100"/>
                     <h3 class="mt-5 ms-3 text-break">{{ u.username }}</h3>
                     <p class="text-end" style="position:absolute;bottom:5px;right:5px;margin:0;padding:5px 3px;" >  {{ u.profile.friends.count }} Friends</p>
                 </div>
             </div>
+
             {% if request.user == u %}
-            <div class="edit_profile pb-2">
+            <div class="pb-2">
                 <a class="fs-6 text-decoration-none mx-2" href="{% url 'edit_profile' %}">Edit Profile</a>
             </div>
                 {% endif %}
                 {% if request.user == u %}
                                            <!-- Button trigger modal -->
+                        <div>
                         <button type="button" class="btn btn-primary position-relative" data-bs-toggle="modal"
                                 data-bs-target="#exampleModal"
                         style="max-width: fit-content">
@@ -37,6 +40,10 @@
                                 </span>
                             {% endif %}
                         </button>
+                        <a class="position-relative ps-3" href="{% url 'inbox' %}"><i class="fa-solid fa-message"></i>
+                            {% display_notifications %}
+                        </a>
+                        </div>
                         <!-- Modal for friend requests and sent -->
                         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
                              aria-hidden="true">
@@ -218,7 +225,7 @@
                                                 style="color: crimson"><i class="fa-solid fa-trash"></i>
                             </a>
                             {% endif %}
-                            {% if request.user == post.shared_username %}
+                            {% if request.user == post.shared_username%}
                             <a type="button" class="float-end" data-bs-toggle="modal" data-bs-target="#deletepost"
                                                 style="color: crimson"><i class="fa-solid fa-trash"></i>
                             </a>
@@ -271,7 +278,7 @@
                                         <button class="btn btn-sm btn-primary btn-block text-uppercase" type="submit">
                                             Share!</button><br>
                             </div>
-                      </form>
+                        </form>
                       </div>
                       <div class="card-footer">
                       {% if not request.user == post.username and not request.user == post.shared_username%}
@@ -279,10 +286,10 @@
                          <button class="btn like float-sm-start" id="{{ post.id }}">
                              {% if post in is_liked %}
                                  <a type="icon" class="btn btn-danger btn-sm" href="{% url 'post-like' %}"
-                                    id="likebtn{{ post.id }}"><i class="fa-solid fa-heart-crack"></i></a>
+                                    id="like-btn{{ post.id }}"><i class="fa-solid fa-heart-crack"></i></a>
                              {% else %}
                                  <a type="icon" class="btn btn-primary btn-sm" href="{% url 'post-like' %}"
-                                    id="likebtn{{ post.id }}"><i class="fa-solid fa-heart"></i></a>
+                                    id="like-btn{{ post.id }}"><i class="fa-solid fa-heart"></i></a>
                              {% endif %}
                          </button>
                             <!-- button for sharing a post -->
@@ -402,14 +409,14 @@
         },
         success: function(response){
           if(response.liked){
-              $('#likebtn' + id).html('<i class="fa-solid fa-heart-crack"></i>');
-              $('#likebtn' + id).css("background-color", "#dc3545")
-              $('#likebtn' + id).css("border-color", "#dc3545")
+              $('#like-btn' + id).html('<i class="fa-solid fa-heart-crack"></i>');
+              $('#like-btn' + id).css("background-color", "#dc3545")
+              $('#like-btn' + id).css("border-color", "#dc3545")
           }
           else{
-              $('#likebtn' + id).html('<i class="fa-solid fa-heart"></i>');
-              $('#likebtn' + id).css("background-color", "#007bff")
-              $('#likebtn' + id).css("border-color", "#007bff")
+              $('#like-btn' + id).html('<i class="fa-solid fa-heart"></i>');
+              $('#like-btn' + id).css("background-color", "#007bff")
+              $('#like-btn' + id).css("border-color", "#007bff")
 
           }
         }

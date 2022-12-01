@@ -1,0 +1,39 @@
+{% extends 'feed/base.html' %}{% load crispy_forms_tags %} {% load static %} {% load feed_tags %}
+
+
+{% block content %}
+    {% include 'feed/navbar.html' %}
+    <div class="container justify-content-start">
+        <div class="row">
+            <div class="col-md-12 p-3">
+                <h3>Messages</h3>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="p-3">
+                <form method="GET" action="{% url 'create-thread' %}">
+                    <button class="btn btn-primary p-3" type="submit">Start Messaging</button>
+                </form>
+            </div>
+        </div>
+
+        {% for thread in threads %}
+            <div class="row mb-3">
+                <div class="card p-3 shadow-sm" style="max-width: 25%">
+                    {% if request.user  == thread.user%}
+                        <h3 class="text-center"> {{ thread.reciever }}</h3>
+                    {% elif request.user == thread.reciever %}
+                        <h3 class="text-center"> {{ thread.user }}</h3>
+                    {% endif  %}
+
+                    <a class="stretched-link" href="{% url 'delete-notification' thread.pk%}"></a>
+                    {% if notifications.message == thread %}
+                        {% display_notifications %}
+                    {% endif %}
+                </div>
+            </div>
+
+        {% endfor %}
+    </div>
+{% endblock content %}
