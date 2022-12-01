@@ -1,0 +1,26 @@
+body{
+    background-color: whitesmoke;
+}
+
+.sent-message{
+    background-color: #007bff;
+    color: white;
+    border-radius: 32px;
+    padding: 10px 25px;
+    width: fit-content;
+    max-width: 25%;
+    text-align: start;
+    word-wrap: normal;
+}
+
+.recieved-message{
+    background-color: #35ba3a;
+    color: white;
+    border-radius: 32px;
+    padding: 10px 20px;
+    width: fit-content;
+    max-width: 25%;
+    float: right;
+    text-align: start;
+    word-wrap: normal;
+}
